@@ -3,49 +3,46 @@ package skripsi.magfira.ambulanceapp.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
+import skripsi.magfira.ambulanceapp.presentation.auth.screens.LoginScreen
+import skripsi.magfira.ambulanceapp.presentation.auth.screens.SplashScreen
 import skripsi.magfira.ambulanceapp.presentation.auth.view_model.AuthViewModel
 import skripsi.magfira.ambulanceapp.utils.ui.theme.AmbulanceAppTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AmbulanceAppTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "auth") {
+                NavHost(navController = navController, startDestination = Screen.Auth.route) {
                     navigation(
-                        startDestination = "login",
-                        route = "auth"
+                        startDestination = Screen.AuthSplashScreen.route,
+                        route = Screen.Auth.route
                     ) {
-                        composable("login") {
-                            val viewModel = it.sharedViewModel<AuthViewModel>(navController)
+                        var viewModel: AuthViewModel? = null
 
-                            Button(onClick = {
-                                navController.navigate("customer") {
-                                    popUpTo("auth") {
-                                        inclusive = true
-                                    }
-                                }
-                            }) {
+                        composable(Screen.AuthSplashScreen.route) {
+                            viewModel = hiltViewModel()
+                            SplashScreen(viewModel!!, navController)
+                        }
+                        composable(Screen.AuthLogin.route) {
+                            LoginScreen(viewModel!!, navController)
 
-                            }
                         }
-                        composable("register") {
-                            val viewModel = it.sharedViewModel<AuthViewModel>(navController)
+                        composable(Screen.AuthRegisterCustomer.route) {
+
                         }
-                        composable("forgot_password") {
-                            val viewModel = it.sharedViewModel<AuthViewModel>(navController)
+                        composable(Screen.AuthRegisterYayasan.route) {
+
                         }
                     }
                     navigation(
@@ -92,45 +89,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@Composable
-inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
-    val navGraphRoute = destination.parent?.route ?: return viewModel()
-    val parentEntry = remember(this) {
-        navController.getBackStackEntry(navGraphRoute)
-    }
-    return viewModel(parentEntry)
-}
-
-//class MainActivity : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-//            AmbulanceAppTheme {
-//                // A surface container using the 'background' color from the theme
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background
-//                ) {
-//                    Greeting("Android")
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//@Composable
-//fun Greeting(name: String, modifier: Modifier = Modifier) {
-//    Text(
-//        text = "Hello $name!",
-//        modifier = modifier
-//    )
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    AmbulanceAppTheme {
-//        Greeting("Android")
-//    }
-//}

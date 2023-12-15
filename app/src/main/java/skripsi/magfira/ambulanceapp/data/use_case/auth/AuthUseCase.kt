@@ -13,7 +13,6 @@ import javax.inject.Inject
 class AuthUseCase @Inject constructor(
     private val repository: AuthRepository
 ) {
-
     fun login(username: String, password: String): Flow<Resource<Login>> = flow {
         try {
             // Loading

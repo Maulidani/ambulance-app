@@ -9,6 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import skripsi.magfira.ambulanceapp.utils.Constants
 import skripsi.magfira.ambulanceapp.data.remote.auth.AuthApi
 import skripsi.magfira.ambulanceapp.data.repository.auth.AuthRepositoryImpl
+import skripsi.magfira.ambulanceapp.data.use_case.auth.AuthUseCase
 import skripsi.magfira.ambulanceapp.domain.repository.auth.AuthRepository
 import javax.inject.Singleton
 
@@ -32,6 +33,12 @@ object AppModule {
     fun provideAuthRepository(api: AuthApi): AuthRepository {
         return AuthRepositoryImpl(api)
     }
+
+//    @Provides
+//    @Singleton
+//    fun provideAuthUseCase(repository: AuthRepository): AuthUseCase {
+//        return AuthUseCase(repository)
+//    }
 
     // Customer
     //
