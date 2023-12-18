@@ -3,13 +3,18 @@ package skripsi.magfira.ambulanceapp.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import skripsi.magfira.ambulanceapp.presentation.auth.screens.LoginScreen
 import skripsi.magfira.ambulanceapp.presentation.auth.screens.SplashScreen
@@ -22,26 +27,37 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AmbulanceAppTheme {
+                SetBarColor(color = MaterialTheme.colorScheme.background)
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = Screen.Auth.route) {
+                NavHost(navController = navController, startDestination = ScreenRoute.Auth.route) {
                     navigation(
-                        startDestination = Screen.AuthSplashScreen.route,
-                        route = Screen.Auth.route
+                        startDestination = ScreenRoute.AuthSplashScreen.route,
+                        route = ScreenRoute.Auth.route
                     ) {
                         var viewModel: AuthViewModel? = null
-
-                        composable(Screen.AuthSplashScreen.route) {
+                        composable(ScreenRoute.AuthSplashScreen.route) {
                             viewModel = hiltViewModel()
                             SplashScreen(viewModel!!, navController)
                         }
-                        composable(Screen.AuthLogin.route) {
+                        composable(
+                            route = ScreenRoute.AuthLogin.route,
+                            enterTransition = { fadeIn() },
+                            exitTransition = { fadeOut() },
+                        ) {
                             LoginScreen(viewModel!!, navController)
+                        }
+                        composable(
+                            route = ScreenRoute.AuthRegisterCustomer.route,
+                            enterTransition = { fadeIn() },
+                            exitTransition = { fadeOut() },
+                        ) {
 
                         }
-                        composable(Screen.AuthRegisterCustomer.route) {
-
-                        }
-                        composable(Screen.AuthRegisterYayasan.route) {
+                        composable(
+                            route = ScreenRoute.AuthRegisterYayasan.route,
+                            enterTransition = { fadeIn() },
+                            exitTransition = { fadeOut() },
+                        ) {
 
                         }
                     }
@@ -88,4 +104,15 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    @Composable
+    private fun SetBarColor(color: Color) {
+        val systemUiController = rememberSystemUiController()
+        SideEffect {
+            systemUiController.setSystemBarsColor(
+                color = color
+            )
+        }
+    }
+
 }

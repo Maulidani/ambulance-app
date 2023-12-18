@@ -1,8 +1,5 @@
 package skripsi.magfira.ambulanceapp.presentation.auth.screens
 
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import skripsi.magfira.ambulanceapp.R
-import skripsi.magfira.ambulanceapp.presentation.Screen
+import skripsi.magfira.ambulanceapp.presentation.ScreenRoute
 import skripsi.magfira.ambulanceapp.presentation.auth.view_model.AuthViewModel
 
 @Composable
@@ -56,8 +53,8 @@ fun SplashScreen(
     }
 
     LaunchedEffect(true) {
-        delay(3000)
-        navController?.navigate(Screen.AuthLogin.route) {
+        delay(2000)
+        navController?.navigate(ScreenRoute.AuthLogin.route) {
             popUpTo("auth") {
                 inclusive = true
             }
