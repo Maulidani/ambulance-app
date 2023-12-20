@@ -22,45 +22,47 @@ import skripsi.magfira.ambulanceapp.R
 import skripsi.magfira.ambulanceapp.presentation.ScreenRoute
 import skripsi.magfira.ambulanceapp.presentation.auth.view_model.AuthViewModel
 
-@Composable
-fun SplashScreen(
-    viewModel: AuthViewModel?,
-    navController: NavHostController?
+class SplashScreen(
+    private val viewModel: AuthViewModel?,
+    private val navController: NavHostController?
 ) {
-    val authState = viewModel?.stateLogin?.collectAsState()
+    @Composable
+    fun MainScreen() {
+        val authState = viewModel?.stateLogin?.collectAsState()
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Image(
-                painter = painterResource(id = R.drawable.logo_text),
-                contentDescription = "logo_text",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 124.dp),
-                contentScale = ContentScale.Fit
-            )
-            Text(
-                text = "Versi aplikasi",
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 16.dp),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-
-    LaunchedEffect(true) {
-        delay(2000)
-        navController?.navigate(ScreenRoute.AuthLogin.route) {
-            popUpTo("auth") {
-                inclusive = true
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo_text),
+                    contentDescription = "logo_text",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 124.dp),
+                    contentScale = ContentScale.Fit
+                )
+                Text(
+                    text = "Versi aplikasi",
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 16.dp),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
-    }
 
+        LaunchedEffect(true) {
+            delay(2000)
+            navController?.navigate(ScreenRoute.AuthLogin.route) {
+                popUpTo(ScreenRoute.Auth.route) {
+                    inclusive = true
+                }
+            }
+        }
+
+    }
 }
 
 @Preview(showBackground = true)

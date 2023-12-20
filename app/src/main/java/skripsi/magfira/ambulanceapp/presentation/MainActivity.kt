@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import skripsi.magfira.ambulanceapp.presentation.auth.screens.LoginScreen
+import skripsi.magfira.ambulanceapp.presentation.auth.screens.RegisterCustomerScreen
 import skripsi.magfira.ambulanceapp.presentation.auth.screens.SplashScreen
 import skripsi.magfira.ambulanceapp.presentation.auth.view_model.AuthViewModel
 import skripsi.magfira.ambulanceapp.utils.ui.theme.AmbulanceAppTheme
@@ -37,21 +38,21 @@ class MainActivity : ComponentActivity() {
                         var viewModel: AuthViewModel? = null
                         composable(ScreenRoute.AuthSplashScreen.route) {
                             viewModel = hiltViewModel()
-                            SplashScreen(viewModel!!, navController)
+                            SplashScreen(viewModel!!, navController).MainScreen()
                         }
                         composable(
                             route = ScreenRoute.AuthLogin.route,
                             enterTransition = { fadeIn() },
                             exitTransition = { fadeOut() },
                         ) {
-                            LoginScreen(viewModel!!, navController)
+                            LoginScreen(viewModel!!, navController).MainScreen()
                         }
                         composable(
                             route = ScreenRoute.AuthRegisterCustomer.route,
                             enterTransition = { fadeIn() },
                             exitTransition = { fadeOut() },
                         ) {
-
+                            RegisterCustomerScreen(viewModel!!, navController).MainScreen()
                         }
                         composable(
                             route = ScreenRoute.AuthRegisterYayasan.route,
