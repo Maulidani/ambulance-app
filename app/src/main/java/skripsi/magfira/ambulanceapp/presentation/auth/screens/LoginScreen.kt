@@ -149,13 +149,11 @@ class LoginScreen(
         var passwordVisibility by remember { mutableStateOf(false) }
         val keyboardController = LocalSoftwareKeyboardController.current
 
-        val roundedFormShape = RoundedCornerShape(24.dp)
-
         TextField(
             value = username.value,
             onValueChange = { username.value = it },
             label = { Text("Username") },
-            shape = roundedFormShape,
+            shape = RoundedCornerShape(24.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = MaterialTheme.colorScheme.background,
                 focusedBorderColor = Color.Transparent,
@@ -178,7 +176,7 @@ class LoginScreen(
             value = password.value,
             onValueChange = { password.value = it },
             label = { Text("Password") },
-            shape = roundedFormShape,
+            shape = RoundedCornerShape(24.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = MaterialTheme.colorScheme.background,
                 focusedBorderColor = Color.Transparent,
@@ -188,7 +186,7 @@ class LoginScreen(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Username",
+                    contentDescription = "Password",
                     tint = Color.Gray,
                 )
             },
@@ -220,7 +218,7 @@ class LoginScreen(
                 onClick = {
                     /* Handle login */
                 },
-                shape = roundedFormShape
+                shape = RoundedCornerShape(24.dp)
             ) {
                 Text(
                     text = "Masuk",
@@ -266,13 +264,11 @@ class LoginScreen(
         var passwordVisibility by remember { mutableStateOf(false) }
         val keyboardController = LocalSoftwareKeyboardController.current
 
-        val roundedFormShape = RoundedCornerShape(24.dp)
-
         TextField(
             value = username.value,
             onValueChange = { username.value = it },
             label = { Text("Username") },
-            shape = roundedFormShape,
+            shape = RoundedCornerShape(24.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = MaterialTheme.colorScheme.background,
                 focusedBorderColor = Color.Transparent,
@@ -295,7 +291,7 @@ class LoginScreen(
             value = password.value,
             onValueChange = { password.value = it },
             label = { Text("Password") },
-            shape = roundedFormShape,
+            shape = RoundedCornerShape(24.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = MaterialTheme.colorScheme.background,
                 focusedBorderColor = Color.Transparent,
@@ -305,7 +301,7 @@ class LoginScreen(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Username",
+                    contentDescription = "Password",
                     tint = Color.Gray,
                 )
             },
@@ -335,9 +331,9 @@ class LoginScreen(
         ) {
             Button(
                 onClick = {
-                    /* Handle login */
+                    navController?.navigate(ScreenRoute.Customer.route)
                 },
-                shape = roundedFormShape
+                shape = RoundedCornerShape(24.dp)
             ) {
                 Text(
                     text = "Masuk",
@@ -380,13 +376,11 @@ class LoginScreen(
         var passwordVisibility by remember { mutableStateOf(false) }
         val keyboardController = LocalSoftwareKeyboardController.current
 
-        val roundedFormShape = RoundedCornerShape(24.dp)
-
         TextField(
             value = username.value,
             onValueChange = { username.value = it },
             label = { Text("Username") },
-            shape = roundedFormShape,
+            shape = RoundedCornerShape(24.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = MaterialTheme.colorScheme.background,
                 focusedBorderColor = Color.Transparent,
@@ -409,7 +403,7 @@ class LoginScreen(
             value = password.value,
             onValueChange = { password.value = it },
             label = { Text("Password") },
-            shape = roundedFormShape,
+            shape = RoundedCornerShape(24.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = MaterialTheme.colorScheme.background,
                 focusedBorderColor = Color.Transparent,
@@ -419,7 +413,7 @@ class LoginScreen(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Username",
+                    contentDescription = "Password",
                     tint = Color.Gray,
                 )
             },
@@ -451,7 +445,7 @@ class LoginScreen(
                 onClick = {
                     /* Handle login */
                 },
-                shape = roundedFormShape
+                shape = RoundedCornerShape(24.dp),
             ) {
                 Text(
                     text = "Masuk",

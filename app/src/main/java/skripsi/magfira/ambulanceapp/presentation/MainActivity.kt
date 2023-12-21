@@ -17,7 +17,10 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import skripsi.magfira.ambulanceapp.presentation.auth.screens.LoginScreen
+import skripsi.magfira.ambulanceapp.presentation.auth.screens.RegisterAccountCustomerScreen
+import skripsi.magfira.ambulanceapp.presentation.auth.screens.RegisterAccountYayasanScreen
 import skripsi.magfira.ambulanceapp.presentation.auth.screens.RegisterCustomerScreen
+import skripsi.magfira.ambulanceapp.presentation.auth.screens.RegisterYayasanScreen
 import skripsi.magfira.ambulanceapp.presentation.auth.screens.SplashScreen
 import skripsi.magfira.ambulanceapp.presentation.auth.view_model.AuthViewModel
 import skripsi.magfira.ambulanceapp.utils.ui.theme.AmbulanceAppTheme
@@ -55,49 +58,72 @@ class MainActivity : ComponentActivity() {
                             RegisterCustomerScreen(viewModel!!, navController).MainScreen()
                         }
                         composable(
+                            route = ScreenRoute.AuthRegisterAccountCustomer.route,
+                            enterTransition = { fadeIn() },
+                            exitTransition = { fadeOut() },
+                        ) {
+                            RegisterAccountCustomerScreen(viewModel!!, navController).MainScreen()
+                        }
+                        composable(
                             route = ScreenRoute.AuthRegisterYayasan.route,
                             enterTransition = { fadeIn() },
                             exitTransition = { fadeOut() },
                         ) {
+                            RegisterYayasanScreen(viewModel!!, navController).MainScreen()
+                        }
+                        composable(
+                            route = ScreenRoute.AuthRegisterAccountYayasan.route,
+                            enterTransition = { fadeIn() },
+                            exitTransition = { fadeOut() },
+                        ) {
+                            RegisterAccountYayasanScreen(viewModel!!, navController).MainScreen()
+                        }
+                    }
+                    navigation(
+                        startDestination = ScreenRoute.CustomerMain.route,
+                        route = ScreenRoute.Customer.route,
+                    ) {
+                        composable(ScreenRoute.CustomerMain.route) {
+
+                        }
+                        composable(ScreenRoute.CustomerProfile.route) {
+
+                        }
+                        composable(ScreenRoute.CustomerAccount.route) {
 
                         }
                     }
                     navigation(
-                        startDestination = "home",
-                        route = "customer"
+                        startDestination = ScreenRoute.DriverMain.route,
+                        route = ScreenRoute.Driver.route,
                     ) {
-                        composable("home") {
+                        composable(ScreenRoute.DriverMain.route) {
 
                         }
-                        composable("profile") {
+                        composable(ScreenRoute.DriverProfile.route) {
+
+                        }
+                        composable(ScreenRoute.DriverAccount.route) {
 
                         }
                     }
                     navigation(
-                        startDestination = "home",
-                        route = "yayasan"
+                        startDestination = ScreenRoute.YayasanMain.route,
+                        route = ScreenRoute.Yayasan.route,
                     ) {
-                        composable("home") {
+                        composable(ScreenRoute.YayasanMain.route) {
 
                         }
-                        composable("profile") {
+                        composable(ScreenRoute.YayasanProfile.route) {
 
                         }
-                        composable("drivers") {
+                        composable(ScreenRoute.YayasanAccount.route) {
 
                         }
-                        composable("driver_profile") {
+                        composable(ScreenRoute.YayasanDrivers.route) {
 
                         }
-                    }
-                    navigation(
-                        startDestination = "home",
-                        route = "driver"
-                    ) {
-                        composable("home") {
-
-                        }
-                        composable("profile") {
+                        composable(ScreenRoute.YayasanDriverAccount.route) {
 
                         }
                     }

@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import skripsi.magfira.ambulanceapp.presentation.ScreenRoute
 import skripsi.magfira.ambulanceapp.presentation.auth.view_model.AuthViewModel
 
 class RegisterCustomerScreen(
@@ -99,8 +100,6 @@ class RegisterCustomerScreen(
                     val phone = remember { mutableStateOf("") }
                     val textPhoto = remember { mutableStateOf("Upload Foto Profil") }
 
-                    val roundedFormShape = RoundedCornerShape(24.dp)
-
                     Text(
                         text = "Lengkapi data berikut",
                         style = MaterialTheme.typography.titleLarge,
@@ -112,7 +111,7 @@ class RegisterCustomerScreen(
                         value = name.value,
                         onValueChange = { name.value = it },
                         label = { Text("Nama Lengkap") },
-                        shape = roundedFormShape,
+                        shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             containerColor = MaterialTheme.colorScheme.background,
                             focusedBorderColor = Color.Transparent,
@@ -135,7 +134,7 @@ class RegisterCustomerScreen(
                         value = email.value,
                         onValueChange = { email.value = it },
                         label = { Text("Email") },
-                        shape = roundedFormShape,
+                        shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             containerColor = MaterialTheme.colorScheme.background,
                             focusedBorderColor = Color.Transparent,
@@ -158,7 +157,7 @@ class RegisterCustomerScreen(
                         value = phone.value,
                         onValueChange = { phone.value = it },
                         label = { Text("No. Telepon") },
-                        shape = roundedFormShape,
+                        shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             containerColor = MaterialTheme.colorScheme.background,
                             focusedBorderColor = Color.Transparent,
@@ -180,7 +179,7 @@ class RegisterCustomerScreen(
                     Surface(
                         modifier = Modifier
                             .padding(top = 16.dp),
-                        shape = roundedFormShape
+                        shape = RoundedCornerShape(24.dp),
                     ) {
                         Column(
                             modifier = Modifier
@@ -212,9 +211,9 @@ class RegisterCustomerScreen(
                     ) {
                         Button(
                             onClick = {
-                                /* Handle login */
+                                navController?.navigate(ScreenRoute.AuthRegisterAccountCustomer.route)
                             },
-                            shape = roundedFormShape
+                            shape = RoundedCornerShape(24.dp),
                         ) {
                             Text(
                                 text = "Lanjut",
