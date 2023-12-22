@@ -1,4 +1,4 @@
-package skripsi.magfira.ambulanceapp.presentation.auth.screens
+package skripsi.magfira.ambulanceapp.presentation.auth.screens.customer
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,17 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,32 +29,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import skripsi.magfira.ambulanceapp.presentation.ScreenRoute
 import skripsi.magfira.ambulanceapp.presentation.auth.view_model.AuthViewModel
 
-class RegisterAccountCustomerScreen(
+class RegisterCustomerScreen(
     private val viewModel: AuthViewModel?,
     private val navController: NavHostController?
 ) {
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainScreen() {
         Column(
@@ -105,12 +94,10 @@ class RegisterAccountCustomerScreen(
                         .background(MaterialTheme.colorScheme.secondary)
                         .padding(all = 24.dp)
                 ) {
-                    val username = remember { mutableStateOf("") }
-                    val password = remember { mutableStateOf("") }
-                    val confirmPassword = remember { mutableStateOf("") }
-                    var passwordVisibility by remember { mutableStateOf(false) }
-                    var confirmPasswordVisibility by remember { mutableStateOf(false) }
-                    val keyboardController = LocalSoftwareKeyboardController.current
+                    val name = remember { mutableStateOf("") }
+                    val email = remember { mutableStateOf("") }
+                    val phone = remember { mutableStateOf("") }
+                    val textPhoto = remember { mutableStateOf("Upload Foto Profil") }
 
                     Text(
                         text = "Lengkapi data berikut",
@@ -120,8 +107,8 @@ class RegisterAccountCustomerScreen(
                         textAlign = TextAlign.Center
                     )
                     TextField(
-                        value = username.value,
-                        onValueChange = { username.value = it },
+                        value = name.value,
+                        onValueChange = { name.value = it },
                         label = { Text("Nama Lengkap") },
                         shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -143,9 +130,9 @@ class RegisterAccountCustomerScreen(
                         singleLine = true
                     )
                     TextField(
-                        value = password.value,
-                        onValueChange = { password.value = it },
-                        label = { Text("Password") },
+                        value = email.value,
+                        onValueChange = { email.value = it },
+                        label = { Text("Email") },
                         shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             containerColor = MaterialTheme.colorScheme.background,
@@ -155,33 +142,20 @@ class RegisterAccountCustomerScreen(
                         ),
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = "Password",
+                                imageVector = Icons.Default.Email,
+                                contentDescription = "Email",
                                 tint = Color.Gray,
-                            )
-                        },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = if (passwordVisibility) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = "Toggle Password Visibility",
-                                tint = Color.Gray,
-                                modifier = Modifier.clickable {
-                                    passwordVisibility = !passwordVisibility
-                                    keyboardController?.hide()
-                                }
                             )
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 16.dp),
-                        singleLine = true,
-                        visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        singleLine = true
                     )
                     TextField(
-                        value = confirmPassword.value,
-                        onValueChange = { confirmPassword.value = it },
-                        label = { Text("Ulangi Password") },
+                        value = phone.value,
+                        onValueChange = { phone.value = it },
+                        label = { Text("No. Telepon") },
                         shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             containerColor = MaterialTheme.colorScheme.background,
@@ -191,29 +165,43 @@ class RegisterAccountCustomerScreen(
                         ),
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = "Password",
+                                imageVector = Icons.Default.Phone,
+                                contentDescription = "Phone",
                                 tint = Color.Gray,
-                            )
-                        },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = if (confirmPasswordVisibility) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = "Toggle Password Visibility",
-                                tint = Color.Gray,
-                                modifier = Modifier.clickable {
-                                    confirmPasswordVisibility = !confirmPasswordVisibility
-                                    keyboardController?.hide()
-                                }
                             )
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 16.dp),
-                        singleLine = true,
-                        visualTransformation = if (confirmPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        singleLine = true
                     )
+                    Surface(
+                        modifier = Modifier
+                            .padding(top = 16.dp),
+                        shape = RoundedCornerShape(24.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .background(MaterialTheme.colorScheme.background),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(text = textPhoto.value)
+                            Spacer(modifier = Modifier.size(12.dp))
+                            Image(
+                                modifier = Modifier
+                                    .size(width = 80.dp, height = 80.dp)
+                                    .clickable {
+                                        //
+                                    },
+                                imageVector = Icons.Default.Upload,
+                                contentDescription = "Photo Profile",
+                                contentScale = ContentScale.Fit,
+                                colorFilter = ColorFilter.tint(Color.Gray)
+                            )
+                        }
+                    }
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -222,12 +210,12 @@ class RegisterAccountCustomerScreen(
                     ) {
                         Button(
                             onClick = {
-                                /* Handle login */
+                                navController?.navigate(ScreenRoute.AuthRegisterAccountCustomer.route)
                             },
-                            shape = RoundedCornerShape(24.dp)
+                            shape = RoundedCornerShape(24.dp),
                         ) {
                             Text(
-                                text = "Daftar",
+                                text = "Lanjut",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = Color.White,
                                 modifier = Modifier
@@ -250,6 +238,6 @@ class RegisterAccountCustomerScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun RegisterAccountCustomerScreenPreview() {
-    RegisterAccountCustomerScreen(null, null).MainScreen()
+fun RegisterCustomerScreenPreview() {
+    RegisterCustomerScreen(null, null).MainScreen()
 }

@@ -37,7 +37,7 @@ class SplashScreen(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Image(
                     painter = painterResource(id = R.drawable.logo_text),
-                    contentDescription = "logo_text",
+                    contentDescription = "Logo",
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 124.dp),

@@ -17,12 +17,15 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import skripsi.magfira.ambulanceapp.presentation.auth.screens.LoginScreen
-import skripsi.magfira.ambulanceapp.presentation.auth.screens.RegisterAccountCustomerScreen
-import skripsi.magfira.ambulanceapp.presentation.auth.screens.RegisterAccountYayasanScreen
-import skripsi.magfira.ambulanceapp.presentation.auth.screens.RegisterCustomerScreen
-import skripsi.magfira.ambulanceapp.presentation.auth.screens.RegisterYayasanScreen
+import skripsi.magfira.ambulanceapp.presentation.auth.screens.customer.RegisterAccountCustomerScreen
+import skripsi.magfira.ambulanceapp.presentation.auth.screens.yayasan.RegisterAccountYayasanScreen
+import skripsi.magfira.ambulanceapp.presentation.auth.screens.customer.RegisterCustomerScreen
+import skripsi.magfira.ambulanceapp.presentation.auth.screens.yayasan.RegisterYayasanScreen
 import skripsi.magfira.ambulanceapp.presentation.auth.screens.SplashScreen
 import skripsi.magfira.ambulanceapp.presentation.auth.view_model.AuthViewModel
+import skripsi.magfira.ambulanceapp.presentation.main.customer.MainCustomerScreen
+import skripsi.magfira.ambulanceapp.presentation.main.driver.MainDriverScreen
+import skripsi.magfira.ambulanceapp.presentation.main.yayasan.MainYayasanScreen
 import skripsi.magfira.ambulanceapp.utils.ui.theme.AmbulanceAppTheme
 
 @AndroidEntryPoint
@@ -39,6 +42,7 @@ class MainActivity : ComponentActivity() {
                         route = ScreenRoute.Auth.route
                     ) {
                         var viewModel: AuthViewModel? = null
+
                         composable(ScreenRoute.AuthSplashScreen.route) {
                             viewModel = hiltViewModel()
                             SplashScreen(viewModel!!, navController).MainScreen()
@@ -83,8 +87,10 @@ class MainActivity : ComponentActivity() {
                         startDestination = ScreenRoute.CustomerMain.route,
                         route = ScreenRoute.Customer.route,
                     ) {
-                        composable(ScreenRoute.CustomerMain.route) {
+//                        var viewModel: ViewModel? = null
 
+                        composable(ScreenRoute.CustomerMain.route) {
+                            MainCustomerScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRoute.CustomerProfile.route) {
 
@@ -97,8 +103,10 @@ class MainActivity : ComponentActivity() {
                         startDestination = ScreenRoute.DriverMain.route,
                         route = ScreenRoute.Driver.route,
                     ) {
-                        composable(ScreenRoute.DriverMain.route) {
+//                        var viewModel: ViewModel? = null
 
+                        composable(ScreenRoute.DriverMain.route) {
+                            MainDriverScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRoute.DriverProfile.route) {
 
@@ -111,8 +119,11 @@ class MainActivity : ComponentActivity() {
                         startDestination = ScreenRoute.YayasanMain.route,
                         route = ScreenRoute.Yayasan.route,
                     ) {
-                        composable(ScreenRoute.YayasanMain.route) {
+//                        var viewModel: ViewModel? = null
+                        val viewModel = null
 
+                        composable(ScreenRoute.YayasanMain.route) {
+                            MainYayasanScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRoute.YayasanProfile.route) {
 
