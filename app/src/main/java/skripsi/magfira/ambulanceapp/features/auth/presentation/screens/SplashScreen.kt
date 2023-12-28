@@ -29,26 +29,29 @@ class SplashScreen(
     @Composable
     fun MainScreen() {
         val authState = viewModel?.stateLogin?.collectAsState()
-
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                val logo = painterResource(id = R.drawable.logo_text)
                 Image(
-                    painter = painterResource(id = R.drawable.logo_text),
-                    contentDescription = "Logo",
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 124.dp),
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.Fit,
+                    painter = logo,
+                    contentDescription = logo.toString(),
                 )
                 Text(
-                    text = "Versi aplikasi",
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 16.dp),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    text = "Versi aplikasi",
                 )
             }
         }

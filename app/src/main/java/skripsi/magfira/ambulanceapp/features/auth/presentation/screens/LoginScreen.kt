@@ -1,28 +1,21 @@
 package skripsi.magfira.ambulanceapp.features.auth.presentation.screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,8 +36,7 @@ class LoginScreen(
     fun MainScreen(
     ) {
         val tabOptions = listOf("Customer", "Driver", "Yayasan")
-        var selectedTab by remember { mutableStateOf(tabOptions[0]) }
-
+        var selectedTab by rememberSaveable { mutableStateOf(tabOptions[0]) }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,15 +59,20 @@ class LoginScreen(
                         selectedTab = selectedTab,
                         onTabSelected = { newTab -> selectedTab = newTab }
                     )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(all = 24.dp)
-                    ) {
-                        when (selectedTab) {
-                            tabOptions[0] -> CustomerScreen(viewModel, navController)
-                            tabOptions[1] -> DriverScreen(viewModel, navController)
-                            tabOptions[2] -> YayasanScreen(viewModel, navController)
+                    AnimatedContent(
+                        targetState = selectedTab,
+                        label = "Tab Content"
+                    ) { currentTab ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(all = 24.dp)
+                        ) {
+                            when (currentTab) {
+                                tabOptions[0] -> CustomerScreen(viewModel, navController)
+                                tabOptions[1] -> DriverScreen(viewModel, navController)
+                                tabOptions[2] -> YayasanScreen(viewModel, navController)
+                            }
                         }
                     }
                 }

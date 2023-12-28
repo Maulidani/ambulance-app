@@ -18,12 +18,21 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.LoginScreen
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.SplashScreen
+import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.customer.ProfileAccountCustomerScreen
+import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.customer.ProfileCustomerScreen
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.customer.RegisterAccountCustomerScreen
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.customer.RegisterCustomerScreen
+import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.driver.ProfileAccountDriverScreen
+import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.driver.ProfileDriverScreen
+import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.DriversYayasanScreen
+import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.ProfileAccountYayasanScreen
+import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.ProfileYayasanScreen
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.RegisterAccountYayasanScreen
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.RegisterYayasanScreen
 import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.order.presentation.screens.customer.HomeCustomerScreen
+import skripsi.magfira.ambulanceapp.features.order.presentation.screens.driver.HomeDriverScreen
+import skripsi.magfira.ambulanceapp.features.order.presentation.screens.driver.HomeYayasanScreen
 import skripsi.magfira.ambulanceapp.ui.theme.AmbulanceAppTheme
 
 @AndroidEntryPoint
@@ -91,10 +100,10 @@ class MainActivity : ComponentActivity() {
                             HomeCustomerScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.CustomerProfile.route) {
-
+                            ProfileCustomerScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.CustomerAccount.route) {
-
+                            ProfileAccountCustomerScreen(null, navController).MainScreen()
                         }
                     }
                     navigation(
@@ -104,13 +113,13 @@ class MainActivity : ComponentActivity() {
 //                        var viewModel: ViewModel? = null
 
                         composable(ScreenRouter.DriverMain.route) {
-
+                            HomeDriverScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.DriverProfile.route) {
-
+                            ProfileDriverScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.DriverAccount.route) {
-
+                            ProfileAccountDriverScreen(null, navController).MainScreen()
                         }
                     }
                     navigation(
@@ -121,19 +130,19 @@ class MainActivity : ComponentActivity() {
                         val viewModel = null
 
                         composable(ScreenRouter.YayasanMain.route) {
-
+                            HomeYayasanScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.YayasanProfile.route) {
-
+                            ProfileYayasanScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.YayasanAccount.route) {
-
+                            ProfileAccountYayasanScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.YayasanDrivers.route) {
-
+                            DriversYayasanScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.YayasanDriverAccount.route) {
-
+                            ProfileAccountDriverScreen(null, navController).MainScreen()
                         }
                     }
                 }

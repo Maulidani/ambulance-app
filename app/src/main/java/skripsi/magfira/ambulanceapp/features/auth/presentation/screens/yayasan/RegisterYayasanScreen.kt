@@ -20,8 +20,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,8 +34,9 @@ import androidx.navigation.NavHostController
 import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBar
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.FileUpload
-import skripsi.magfira.ambulanceapp.features.common.presentation.components.IconButton
+import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldForm
+import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
 
 class RegisterYayasanScreen(
     private val viewModel: AuthViewModel?,
@@ -65,50 +68,50 @@ class RegisterYayasanScreen(
                         .background(MaterialTheme.colorScheme.secondary)
                         .padding(all = 24.dp)
                 ) {
-                    val name = remember { mutableStateOf("") }
-                    val email = remember { mutableStateOf("") }
-                    val phone = remember { mutableStateOf("") }
-                    val address = remember { mutableStateOf("") }
-                    val uploadFile = remember { mutableStateOf("Surat Izin Pendirian Yayasan") }
+                    var name by remember { mutableStateOf("") }
+                    var email by remember { mutableStateOf("") }
+                    var phone by remember { mutableStateOf("") }
+                    var address by remember { mutableStateOf("") }
+                    var uploadFile by remember { mutableStateOf("Surat Izin Pendirian Yayasan") }
 
                     Text(
-                        text = "Lengkapi data berikut",
+                        modifier = Modifier.fillMaxWidth(),
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.Black,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        text = "Lengkapi data berikut",
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     TextFieldForm(
-                        value = name.value,
-                        onValueChange = { name.value = it },
+                        value = name,
+                        onValueChange = { name = it },
                         label = "Nama Lengkap",
                         icon = Icons.Default.Person
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     TextFieldForm(
-                        value = email.value,
-                        onValueChange = { email.value = it },
+                        value = email,
+                        onValueChange = { email = it },
                         label = "Email",
                         icon = Icons.Default.Email
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     TextFieldForm(
-                        value = phone.value,
-                        onValueChange = { phone.value = it },
+                        value = phone,
+                        onValueChange = { phone = it },
                         label = "No. Telepon",
                         icon = Icons.Default.Phone
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     TextFieldForm(
-                        value = address.value,
-                        onValueChange = { address.value = it },
+                        value = address,
+                        onValueChange = { address = it },
                         label = "Alamat",
                         icon = Icons.Default.LocationOn
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     FileUpload(
-                        label = uploadFile.value,
+                        label = uploadFile,
                         icon = Icons.Default.Photo,
                         onUploadClick = {
                             //
@@ -120,13 +123,14 @@ class RegisterYayasanScreen(
                             .fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
-                        IconButton(
+                        ButtonIcon(
                             modifier = Modifier,
                             onClick = {
-                                //
+                                navController?.navigate(ScreenRouter.AuthRegisterAccountYayasan.route)
                             },
                             icon = Icons.Default.ArrowForwardIos,
                             text = "Lanjut",
+                            textColor = Color.White,
                             backgroundColor = MaterialTheme.colorScheme.primary,
                         )
                     }
@@ -134,7 +138,6 @@ class RegisterYayasanScreen(
             }
         }
     }
-
 }
 
 @Preview(showBackground = true)

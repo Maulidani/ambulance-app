@@ -26,7 +26,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
-import skripsi.magfira.ambulanceapp.features.common.presentation.components.IconButton
+import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldForm
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldPasswordForm
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
@@ -37,21 +37,20 @@ fun DriverScreen(
     menu: AuthViewModel?,
     navController: NavHostController?
 ) {
-    val username = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
-
     TextFieldForm(
-        value = username.value,
-        onValueChange = { password.value = it },
+        value = username,
+        onValueChange = { password = it },
         label = "Username",
         icon = Icons.Default.Person
     )
     Spacer(modifier = Modifier.height(16.dp))
     TextFieldPasswordForm(
-        value = password.value,
-        onValueChange = { password.value = it },
+        value = password,
+        onValueChange = { password = it },
         label = "Password",
         icon = Icons.Default.Lock,
         passwordVisibility = passwordVisibility,
@@ -59,13 +58,14 @@ fun DriverScreen(
         keyboardController = keyboardController
     )
     Spacer(modifier = Modifier.height(24.dp))
-    IconButton(
+    ButtonIcon(
         modifier = Modifier.fillMaxWidth(),
         onClick = {
-            navController?.navigate(ScreenRouter.Customer.route)
+            navController?.navigate(ScreenRouter.Driver.route)
         },
         icon = Icons.Default.ArrowForwardIos,
         text = "Masuk",
+        textColor = Color.White,
         backgroundColor = MaterialTheme.colorScheme.primary,
     )
     val textRegister = buildAnnotatedString {
@@ -77,11 +77,11 @@ fun DriverScreen(
         }
     }
     Text(
+        modifier = Modifier
+            .padding(top = 24.dp)
+            .fillMaxWidth(),
         text = textRegister,
         style = MaterialTheme.typography.bodySmall,
         textAlign = TextAlign.Center,
-        modifier = Modifier
-            .padding(top = 24.dp)
-            .fillMaxWidth()
     )
 }

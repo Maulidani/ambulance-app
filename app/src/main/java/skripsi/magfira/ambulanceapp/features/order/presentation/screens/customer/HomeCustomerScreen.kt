@@ -1,23 +1,18 @@
 package skripsi.magfira.ambulanceapp.features.order.presentation.screens.customer
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBarHome
+import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardOrderingCustomer
+import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
 
 class HomeCustomerScreen(
     private val viewModel: Any?,
@@ -25,6 +20,7 @@ class HomeCustomerScreen(
 ) {
     @Composable
     fun MainScreen() {
+        val ambulanceActive = 999
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -40,7 +36,7 @@ class HomeCustomerScreen(
             ) {
                 AppBarHome(
                     iconSettingClick = {
-                        //
+                        navController?.navigate(ScreenRouter.CustomerProfile.route)
                     }
                 )
                 Box(
@@ -49,21 +45,13 @@ class HomeCustomerScreen(
                         .fillMaxWidth()
                         .background(Color.Transparent),
                 )
-                // ContentDetailView
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .height(120.dp), // Delete Later
-                    shape = RoundedCornerShape(24.dp),
-                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
-                ) {
-
-                }
+//                CardMainCustomer(ambulanceActive = ambulanceActive)
+//                CardEditLocationCustomer(iconBackClick = {})
+//                CardDetailOrderCustomer()
+                CardOrderingCustomer("bla", "bla")
             }
         }
     }
-
 }
 
 @Preview(showBackground = true)

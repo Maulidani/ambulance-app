@@ -1,11 +1,8 @@
 package skripsi.magfira.ambulanceapp.features.auth.presentation.screens.customer
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,12 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBar
-import skripsi.magfira.ambulanceapp.features.common.presentation.components.IconButton
+import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldForm
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldPasswordForm
 
@@ -73,31 +67,30 @@ class RegisterAccountCustomerScreen(
                         .background(MaterialTheme.colorScheme.secondary)
                         .padding(all = 24.dp)
                 ) {
-                    val username = remember { mutableStateOf("") }
-                    val password = remember { mutableStateOf("") }
-                    val confirmPassword = remember { mutableStateOf("") }
+                    var username by remember { mutableStateOf("") }
+                    var password by remember { mutableStateOf("") }
+                    var confirmPassword by remember { mutableStateOf("") }
                     var passwordVisibility by remember { mutableStateOf(false) }
                     var confirmPasswordVisibility by remember { mutableStateOf(false) }
                     val keyboardController = LocalSoftwareKeyboardController.current
-
                     Text(
-                        text = "Lengkapi data berikut",
+                        modifier = Modifier.fillMaxWidth(),
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.Black,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        text = "Lengkapi data berikut",
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     TextFieldForm(
-                        value = username.value,
-                        onValueChange = { username.value = it },
-                        label = "Nama Lengkap",
+                        value = username,
+                        onValueChange = { username = it },
+                        label = "Username",
                         icon = Icons.Default.Person
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     TextFieldPasswordForm(
-                        value = password.value,
-                        onValueChange = { password.value = it },
+                        value = password,
+                        onValueChange = { password = it },
                         label = "Password",
                         icon = Icons.Default.Lock,
                         passwordVisibility = passwordVisibility,
@@ -106,8 +99,8 @@ class RegisterAccountCustomerScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     TextFieldPasswordForm(
-                        value = confirmPassword.value,
-                        onValueChange = { confirmPassword.value = it },
+                        value = confirmPassword,
+                        onValueChange = { confirmPassword = it },
                         label = "Ulangi Password",
                         icon = Icons.Default.Lock,
                         passwordVisibility = confirmPasswordVisibility,
@@ -122,13 +115,14 @@ class RegisterAccountCustomerScreen(
                             .fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
-                        IconButton(
+                        ButtonIcon(
                             modifier = Modifier,
                             onClick = {
                                 //
                             },
                             icon = Icons.Default.ArrowForwardIos,
                             text = "Daftar",
+                            textColor = Color.White,
                             backgroundColor = MaterialTheme.colorScheme.primary,
                         )
                     }
