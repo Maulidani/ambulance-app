@@ -29,7 +29,6 @@ class HomeDriverScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Cyan)
         ) {
 //
 //            Content View (MapView)

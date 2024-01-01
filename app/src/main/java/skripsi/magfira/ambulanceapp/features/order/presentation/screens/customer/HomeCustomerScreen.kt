@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBarHome
+import skripsi.magfira.ambulanceapp.features.common.presentation.components.MapView
+import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardMainCustomer
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardOrderingCustomer
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
 
@@ -24,11 +26,8 @@ class HomeCustomerScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Cyan)
         ) {
-//
-//            Content View (MapView)
-//
+            MapView()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -45,10 +44,10 @@ class HomeCustomerScreen(
                         .fillMaxWidth()
                         .background(Color.Transparent),
                 )
-//                CardMainCustomer(ambulanceActive = ambulanceActive)
+                CardMainCustomer(ambulanceActive = ambulanceActive)
 //                CardEditLocationCustomer(iconBackClick = {})
 //                CardDetailOrderCustomer()
-                CardOrderingCustomer("bla", "bla")
+//                CardOrderingCustomer("bla", "bla")
             }
         }
     }

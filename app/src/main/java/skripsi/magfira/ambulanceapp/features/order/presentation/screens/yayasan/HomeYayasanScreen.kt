@@ -28,7 +28,6 @@ class HomeYayasanScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Cyan)
         ) {
 //
 //            Content View (MapView)
