@@ -19,17 +19,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBar
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldProfile
 
 class ProfileAccountYayasanScreen(
-    private val viewModel: AuthViewModel?,
+    private val viewModel: Any?,
     private val navController: NavHostController?
 ) {
     @Composable

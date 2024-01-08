@@ -1,6 +1,6 @@
 package skripsi.magfira.ambulanceapp.features.auth.data.remote.dto
 
-import skripsi.magfira.ambulanceapp.features.auth.domain.model.CreateDriver
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.CreateDriver
 
 // Data Response
 data class CreateDriverDto(

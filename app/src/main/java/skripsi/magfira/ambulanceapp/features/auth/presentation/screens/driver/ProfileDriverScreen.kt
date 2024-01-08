@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -28,23 +26,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBar
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ImageView
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldProfile
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
+import skripsi.magfira.ambulanceapp.util.requestStoragePermissions
 
 class ProfileDriverScreen(
-    private val viewModel: AuthViewModel?,
+    private val viewModel: Any?,
     private val navController: NavHostController?
 ) {
     @Composable
     fun MainScreen() {
+        val context = LocalContext.current
+        requestStoragePermissions(context)
+
         Column(
             modifier = Modifier
                 .fillMaxSize()

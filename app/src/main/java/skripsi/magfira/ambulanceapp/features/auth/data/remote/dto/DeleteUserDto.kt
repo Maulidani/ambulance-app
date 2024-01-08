@@ -1,6 +1,6 @@
 package skripsi.magfira.ambulanceapp.features.auth.data.remote.dto
 
-import skripsi.magfira.ambulanceapp.features.auth.domain.model.DeleteUser
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.DeleteUser
 
 // Data Response
 data class DeleteUserDto(

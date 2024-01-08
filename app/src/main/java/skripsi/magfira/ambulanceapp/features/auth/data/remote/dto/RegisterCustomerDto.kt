@@ -1,6 +1,6 @@
 package skripsi.magfira.ambulanceapp.features.auth.data.remote.dto
 
-import skripsi.magfira.ambulanceapp.features.auth.domain.model.RegisterCustomer
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.RegisterCustomer
 
 // Data Response
 data class RegisterCustomerDto(

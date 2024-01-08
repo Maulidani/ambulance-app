@@ -5,7 +5,18 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--    Below SDK 32 (Storage)-->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+<!--    <uses-permission-->
+<!--        android:name="android.permission.WRITE_EXTERNAL_STORAGE"-->
+<!--        android:maxSdkVersion="32"-->
+<!--        tools:ignore="ScopedStorage" />-->
+    <!--    bove SDK 32 (Storage)-->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+<!--    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />-->
+<!--    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />-->
 
     <application
         android:name=".AmbulanceApplication"
@@ -14,6 +25,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AmbulanceApp"

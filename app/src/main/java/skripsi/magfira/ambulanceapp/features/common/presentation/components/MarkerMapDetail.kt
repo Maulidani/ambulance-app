@@ -30,6 +30,7 @@ import skripsi.magfira.ambulanceapp.R
 fun MarkerMapDetail() {
     Surface(
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
+        color = Color.Transparent
     ) {
         Column(
             modifier = Modifier

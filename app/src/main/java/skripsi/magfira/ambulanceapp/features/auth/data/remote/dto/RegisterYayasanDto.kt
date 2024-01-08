@@ -1,6 +1,6 @@
 package skripsi.magfira.ambulanceapp.features.auth.data.remote.dto
 
-import skripsi.magfira.ambulanceapp.features.auth.domain.model.RegisterYayasan
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.RegisterYayasan
 
 // Data Response
 data class RegisterYayasanDto(

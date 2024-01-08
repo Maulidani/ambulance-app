@@ -22,6 +22,7 @@ fun ButtonNoIcon(
 ) {
     Surface(
         shape = RoundedCornerShape(24.dp),
+        color = Color.Transparent
     ) {
         Button(
             modifier = modifier,

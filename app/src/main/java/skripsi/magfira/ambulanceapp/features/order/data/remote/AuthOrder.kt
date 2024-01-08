@@ -14,13 +14,12 @@ interface AuthOrder {
     @GET("admin/driver_yayasan_on")
     suspend fun driversYayasanOn(): DriversOnDto
 
-//    @FormUrlEncoded
 //    @POST("login-admin/bokings")
 //    fun orderRequest(
-//        @Field("driver_id") driverId: Int,
-//        @Field("nama") name: String,
-//        @Field("lokasi_jemput") pickUpLocation: String, // LatLng
-//        @Field("detail_pesanan") type: String,
+//        @Body("driver_id") driverId: Int,
+//        @Body("nama") name: String,
+//        @Body("lokasi_jemput") pickUpLocation: String, // LatLng
+//        @Body("detail_pesanan") type: String,
 //    ): orderRequestDto
 
 }

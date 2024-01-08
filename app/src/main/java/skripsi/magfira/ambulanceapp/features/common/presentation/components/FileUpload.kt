@@ -1,5 +1,6 @@
 package skripsi.magfira.ambulanceapp.features.common.presentation.components
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,15 +24,18 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 
 @Composable
 fun FileUpload(
     label: String,
     icon: ImageVector,
+    selectedImage: () -> Uri?,
     onUploadClick: () -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(24.dp),
+//        color = Color.Transparent
     ) {
         Column(
             modifier = Modifier
@@ -40,17 +44,31 @@ fun FileUpload(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = label)
-            Spacer(modifier = Modifier.size(12.dp))
-            Image(
-                modifier = Modifier
-                    .size(width = 80.dp, height = 80.dp)
-                    .clickable(onClick = onUploadClick),
-                imageVector = icon,
-                contentDescription = icon.toString(),
-                contentScale = ContentScale.Fit,
-                colorFilter = ColorFilter.tint(Color.Gray)
-            )
+            if (selectedImage() == null) {
+                Text(text = label)
+                Spacer(modifier = Modifier.size(8.dp))
+            }
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(width = 100.dp, height = 120.dp)
+                        .background(Color.Transparent),
+                    imageVector = icon,
+                    contentDescription = icon.toString(),
+                    contentScale = ContentScale.Fit,
+                    colorFilter = ColorFilter.tint(Color.Gray)
+                )
+                AsyncImage(
+                    modifier = Modifier
+                        .size(width = 100.dp, height = 120.dp)
+                        .clickable(onClick = onUploadClick),
+                    model = selectedImage(),
+                    contentDescription = selectedImage.toString(),
+                    contentScale = ContentScale.Crop,
+                )
+            }
         }
     }
 }

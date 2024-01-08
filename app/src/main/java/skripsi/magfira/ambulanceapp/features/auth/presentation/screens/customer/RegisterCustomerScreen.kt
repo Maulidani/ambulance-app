@@ -1,5 +1,10 @@
 package skripsi.magfira.ambulanceapp.features.auth.presentation.screens.customer
 
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,28 +26,59 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.RegisterCustomerViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBar
-import skripsi.magfira.ambulanceapp.features.common.presentation.components.FileUpload
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
+import skripsi.magfira.ambulanceapp.features.common.presentation.components.FileUpload
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldForm
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
+import skripsi.magfira.ambulanceapp.util.InputValidation.containsNoSpaces
+import skripsi.magfira.ambulanceapp.util.InputValidation.isValidEmailFormat
+import skripsi.magfira.ambulanceapp.util.InputValidation.isValidPhoneFormat
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_INPUT_CONTAIN_SPACE
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_INPUT_INVALID_EMAIL
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_INPUT_INVALID_PHONE
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_REQUIRED_FIELDS
+import skripsi.magfira.ambulanceapp.util.requestStoragePermissions
 
 class RegisterCustomerScreen(
-    private val viewModel: AuthViewModel?,
+    private val viewModel: RegisterCustomerViewModel?,
     private val navController: NavHostController?
 ) {
+    private val TAG = "RegisterCustomerScreen"
+
     @Composable
     fun MainScreen() {
+        val context = LocalContext.current
+        requestStoragePermissions(context)
+
+        var name by rememberSaveable { mutableStateOf("") }
+        var email by rememberSaveable { mutableStateOf("") }
+        var phone by rememberSaveable { mutableStateOf("") }
+        var uploadFile by rememberSaveable { mutableStateOf("Upload Foto Profil") }
+
+        var selectedImageUri by rememberSaveable {
+            mutableStateOf<Uri?>(null)
+        }
+        val photoPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
+            onResult = { uri -> selectedImageUri = uri }
+        )
+//        val photoPickerLauncher = rememberLauncherForActivityResult(
+//            contract = ActivityResultContracts.OpenDocument(),
+//            onResult = { uri -> selectedImageUri = uri }
+//        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,10 +103,6 @@ class RegisterCustomerScreen(
                         .background(MaterialTheme.colorScheme.secondary)
                         .padding(all = 24.dp)
                 ) {
-                    var name by remember { mutableStateOf("") }
-                    var email by remember { mutableStateOf("") }
-                    var phone by remember { mutableStateOf("") }
-                    var uploadFile by remember { mutableStateOf("Upload Foto Profil") }
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         style = MaterialTheme.typography.titleLarge,
@@ -103,8 +135,14 @@ class RegisterCustomerScreen(
                     FileUpload(
                         label = uploadFile,
                         icon = Icons.Default.Photo,
+                        selectedImage = {
+                            selectedImageUri
+                        },
                         onUploadClick = {
-                            //
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+//                            photoPickerLauncher.launch(arrayOf("image/*"))
                         }
                     )
                     Spacer(modifier = Modifier.height(24.dp))
@@ -116,7 +154,29 @@ class RegisterCustomerScreen(
                         ButtonIcon(
                             modifier = Modifier,
                             onClick = {
-                                navController?.navigate(ScreenRouter.AuthRegisterAccountCustomer.route)
+                                if (
+                                    name.isEmpty() ||
+                                    email.isEmpty() ||
+                                    phone.isEmpty() ||
+                                    selectedImageUri == null
+                                ) {
+                                    Toast.makeText(context, MSG_REQUIRED_FIELDS, Toast.LENGTH_SHORT).show()
+                                } else if (
+                                    !containsNoSpaces(name) ||
+                                    !containsNoSpaces(email) ||
+                                    !containsNoSpaces(phone)
+                                ) {
+                                    Toast.makeText(context, MSG_INPUT_CONTAIN_SPACE, Toast.LENGTH_SHORT).show()
+                                } else if (!isValidEmailFormat(email)) {
+                                    Toast.makeText(context, MSG_INPUT_INVALID_EMAIL, Toast.LENGTH_SHORT).show()
+                                } else if (!isValidPhoneFormat(phone)) {
+                                    Toast.makeText(context, MSG_INPUT_INVALID_PHONE, Toast.LENGTH_SHORT).show()
+                                } else {
+                                    val encodedUriString: String = Uri.encode(selectedImageUri.toString())
+                                    navController?.navigate(
+                                        ScreenRouter.AuthRegisterAccountCustomer.routeWithArguments(name,email,phone,encodedUriString)
+                                    )
+                                }
                             },
                             icon = Icons.Default.ArrowForwardIos,
                             text = "Lanjut",

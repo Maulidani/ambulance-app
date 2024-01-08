@@ -1,7 +1,7 @@
 package skripsi.magfira.ambulanceapp.features.auth.data.remote.dto
 
-import skripsi.magfira.ambulanceapp.features.auth.domain.model.ShowUser
-import skripsi.magfira.ambulanceapp.features.auth.domain.model.ShowUserData
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.ShowUser
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.ShowUserData
 
 // Data Response
 data class ShowUserDto(

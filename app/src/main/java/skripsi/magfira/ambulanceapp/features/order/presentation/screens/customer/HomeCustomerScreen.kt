@@ -8,13 +8,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBarHome
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.MapView
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardMainCustomer
-import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardOrderingCustomer
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
+import skripsi.magfira.ambulanceapp.util.requestAllPermissions
 
 class HomeCustomerScreen(
     private val viewModel: Any?,
@@ -22,7 +23,11 @@ class HomeCustomerScreen(
 ) {
     @Composable
     fun MainScreen() {
+        val context = LocalContext.current
+        requestAllPermissions(context)
+
         val ambulanceActive = 999
+
         Box(
             modifier = Modifier
                 .fillMaxSize()

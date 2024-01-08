@@ -10,10 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.LoginScreen
@@ -29,11 +31,18 @@ import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.P
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.ProfileYayasanScreen
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.RegisterAccountYayasanScreen
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.RegisterYayasanScreen
-import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.LoginViewModel
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.RegisterCustomerViewModel
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.RegisterYayasanViewModel
 import skripsi.magfira.ambulanceapp.features.order.presentation.screens.customer.HomeCustomerScreen
 import skripsi.magfira.ambulanceapp.features.order.presentation.screens.driver.HomeDriverScreen
-import skripsi.magfira.ambulanceapp.features.order.presentation.screens.driver.HomeYayasanScreen
+import skripsi.magfira.ambulanceapp.features.order.presentation.screens.yayasan.HomeYayasanScreen
 import skripsi.magfira.ambulanceapp.ui.theme.AmbulanceAppTheme
+import skripsi.magfira.ambulanceapp.util.NetworkUtils.NAME_KEY_ADDRESS
+import skripsi.magfira.ambulanceapp.util.NetworkUtils.NAME_KEY_EMAIL
+import skripsi.magfira.ambulanceapp.util.NetworkUtils.NAME_KEY_FILE_URI
+import skripsi.magfira.ambulanceapp.util.NetworkUtils.NAME_KEY_NAME
+import skripsi.magfira.ambulanceapp.util.NetworkUtils.NAME_KEY_PHONE
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -48,55 +57,105 @@ class MainActivity : ComponentActivity() {
                         startDestination = ScreenRouter.AuthSplashScreen.route,
                         route = ScreenRouter.Auth.route
                     ) {
-                        var viewModel: AuthViewModel? = null
-
                         composable(ScreenRouter.AuthSplashScreen.route) {
-                            viewModel = hiltViewModel()
-                            SplashScreen(viewModel!!, navController).MainScreen()
+//                            val viewModel:  = hiltViewModel()
+                            SplashScreen(null, navController).MainScreen()
                         }
                         composable(
                             route = ScreenRouter.AuthLogin.route,
                             enterTransition = { fadeIn() },
                             exitTransition = { fadeOut() },
                         ) {
-                            LoginScreen(viewModel!!, navController).MainScreen()
+                            val viewModel: LoginViewModel = hiltViewModel()
+                            LoginScreen(viewModel, navController).MainScreen()
                         }
                         composable(
                             route = ScreenRouter.AuthRegisterCustomer.route,
                             enterTransition = { fadeIn() },
                             exitTransition = { fadeOut() },
                         ) {
-                            RegisterCustomerScreen(viewModel!!, navController).MainScreen()
+                            val viewModel: RegisterCustomerViewModel = hiltViewModel()
+                            RegisterCustomerScreen(viewModel, navController).MainScreen()
                         }
                         composable(
                             route = ScreenRouter.AuthRegisterAccountCustomer.route,
+                            arguments = listOf(
+                                navArgument(name = NAME_KEY_NAME) {
+                                    type = NavType.StringType
+                                },
+                                navArgument(name = NAME_KEY_EMAIL) {
+                                    type = NavType.StringType
+                                },
+                                navArgument(name = NAME_KEY_PHONE) {
+                                    type = NavType.StringType
+                                },
+                                navArgument(name = NAME_KEY_FILE_URI) {
+                                    type = NavType.StringType
+                                },
+                            ),
                             enterTransition = { fadeIn() },
                             exitTransition = { fadeOut() },
-                        ) {
-                            RegisterAccountCustomerScreen(viewModel!!, navController).MainScreen()
+                        ) {navBackStackEntry ->
+                            val arguments = navBackStackEntry.arguments?.run {
+                                mapOf(
+                                    NAME_KEY_NAME to getString(NAME_KEY_NAME).orEmpty(),
+                                    NAME_KEY_EMAIL to getString(NAME_KEY_EMAIL).orEmpty(),
+                                    NAME_KEY_PHONE to getString(NAME_KEY_PHONE).orEmpty(),
+                                    NAME_KEY_FILE_URI to getString(NAME_KEY_FILE_URI).orEmpty()
+                                )
+                            } ?: emptyMap()
+                            val viewModel: RegisterCustomerViewModel = hiltViewModel()
+
+                            RegisterAccountCustomerScreen(viewModel, navController).MainScreen(arguments)
                         }
                         composable(
                             route = ScreenRouter.AuthRegisterYayasan.route,
                             enterTransition = { fadeIn() },
                             exitTransition = { fadeOut() },
                         ) {
-                            RegisterYayasanScreen(viewModel!!, navController).MainScreen()
+                            RegisterYayasanScreen(null, navController).MainScreen()
                         }
                         composable(
                             route = ScreenRouter.AuthRegisterAccountYayasan.route,
+                            arguments = listOf(
+                                navArgument(name = NAME_KEY_NAME) {
+                                    type = NavType.StringType
+                                },
+                                navArgument(name = NAME_KEY_EMAIL) {
+                                    type = NavType.StringType
+                                },
+                                navArgument(name = NAME_KEY_PHONE) {
+                                    type = NavType.StringType
+                                },
+                                navArgument(name = NAME_KEY_ADDRESS) {
+                                    type = NavType.StringType
+                                },
+                                navArgument(name = NAME_KEY_FILE_URI) {
+                                    type = NavType.StringType
+                                },
+                            ),
                             enterTransition = { fadeIn() },
                             exitTransition = { fadeOut() },
-                        ) {
-                            RegisterAccountYayasanScreen(viewModel!!, navController).MainScreen()
+                        ) {navBackStackEntry ->
+                            val arguments = navBackStackEntry.arguments?.run {
+                                mapOf(
+                                    NAME_KEY_NAME to getString(NAME_KEY_NAME).orEmpty(),
+                                    NAME_KEY_EMAIL to getString(NAME_KEY_EMAIL).orEmpty(),
+                                    NAME_KEY_PHONE to getString(NAME_KEY_PHONE).orEmpty(),
+                                    NAME_KEY_ADDRESS to getString(NAME_KEY_ADDRESS).orEmpty(),
+                                    NAME_KEY_FILE_URI to getString(NAME_KEY_FILE_URI).orEmpty()
+                                )
+                            } ?: emptyMap()
+                            val viewModel: RegisterYayasanViewModel = hiltViewModel()
+
+                            RegisterAccountYayasanScreen(viewModel, navController).MainScreen(arguments)
                         }
                     }
                     navigation(
-                        startDestination = ScreenRouter.CustomerMain.route,
+                        startDestination = ScreenRouter.CustomerHome.route,
                         route = ScreenRouter.Customer.route,
                     ) {
-//                        var viewModel: ViewModel? = null
-
-                        composable(ScreenRouter.CustomerMain.route) {
+                        composable(ScreenRouter.CustomerHome.route) {
                             HomeCustomerScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.CustomerProfile.route) {
@@ -107,12 +166,10 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     navigation(
-                        startDestination = ScreenRouter.DriverMain.route,
+                        startDestination = ScreenRouter.DriverHome.route,
                         route = ScreenRouter.Driver.route,
                     ) {
-//                        var viewModel: ViewModel? = null
-
-                        composable(ScreenRouter.DriverMain.route) {
+                        composable(ScreenRouter.DriverHome.route) {
                             HomeDriverScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.DriverProfile.route) {
@@ -123,13 +180,10 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     navigation(
-                        startDestination = ScreenRouter.YayasanMain.route,
+                        startDestination = ScreenRouter.YayasanHome.route,
                         route = ScreenRouter.Yayasan.route,
                     ) {
-//                        var viewModel: ViewModel? = null
-                        val viewModel = null
-
-                        composable(ScreenRouter.YayasanMain.route) {
+                        composable(ScreenRouter.YayasanHome.route) {
                             HomeYayasanScreen(null, navController).MainScreen()
                         }
                         composable(ScreenRouter.YayasanProfile.route) {

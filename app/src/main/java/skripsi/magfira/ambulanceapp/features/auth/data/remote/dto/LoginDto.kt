@@ -1,13 +1,13 @@
 package skripsi.magfira.ambulanceapp.features.auth.data.remote.dto
 
-import skripsi.magfira.ambulanceapp.features.auth.domain.model.Login
-import skripsi.magfira.ambulanceapp.features.auth.domain.model.LoginData
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.Login
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.LoginData
 
 // Data Response
 data class LoginDto(
     val success: String,
     val message: String,
-    val data: LoginDataDto,
+    val user: LoginDataDto,
     val token: String
 )
 data class LoginDataDto(
@@ -17,10 +17,10 @@ data class LoginDataDto(
     val status_akun: String,
     val status_login: String,
     val name: String,
-    val email: String,
-    val no_telp: String,
+    val email: String?,
+    val no_telp: String?,
     val alamat: String?,
-    val foto_profil: String,
+    val foto_profil: String?,
     val surat_izin: String?,
     val username: String,
     val lat: Double?,
@@ -34,7 +34,7 @@ fun LoginDto.toLogin(): Login {
     return Login(
         success = success,
         message = message,
-        data = data.toLoginData(),
+        user = user.toLoginData(),
         token = token,
     )
 }

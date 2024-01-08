@@ -35,6 +35,7 @@ fun ImageView(
         Surface(
             modifier = Modifier.size(48.dp),
             shape = RoundedCornerShape(24.dp),
+            color = Color.Transparent
         ) {
             var _source = ImageVector
             Image(

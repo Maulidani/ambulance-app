@@ -1,6 +1,6 @@
 package skripsi.magfira.ambulanceapp.features.auth.data.remote.dto
 
-import skripsi.magfira.ambulanceapp.features.auth.domain.model.Logout
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.Logout
 
 // Data Response
 data class LogoutDto(
