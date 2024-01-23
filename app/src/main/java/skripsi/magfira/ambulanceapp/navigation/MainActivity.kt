@@ -37,6 +37,7 @@ import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.Regis
 import skripsi.magfira.ambulanceapp.features.order.presentation.screens.customer.HomeCustomerScreen
 import skripsi.magfira.ambulanceapp.features.order.presentation.screens.driver.HomeDriverScreen
 import skripsi.magfira.ambulanceapp.features.order.presentation.screens.yayasan.HomeYayasanScreen
+import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
 import skripsi.magfira.ambulanceapp.ui.theme.AmbulanceAppTheme
 import skripsi.magfira.ambulanceapp.util.NetworkUtils.NAME_KEY_ADDRESS
 import skripsi.magfira.ambulanceapp.util.NetworkUtils.NAME_KEY_EMAIL
@@ -156,7 +157,8 @@ class MainActivity : ComponentActivity() {
                         route = ScreenRouter.Customer.route,
                     ) {
                         composable(ScreenRouter.CustomerHome.route) {
-                            HomeCustomerScreen(null, navController).MainScreen()
+                            val viewModel: OrderViewModel = hiltViewModel()
+                            HomeCustomerScreen(viewModel, navController).MainScreen()
                         }
                         composable(ScreenRouter.CustomerProfile.route) {
                             ProfileCustomerScreen(null, navController).MainScreen()

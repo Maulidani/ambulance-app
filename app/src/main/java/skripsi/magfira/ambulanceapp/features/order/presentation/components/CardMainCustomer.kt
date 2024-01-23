@@ -30,10 +30,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import skripsi.magfira.ambulanceapp.R
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
+import skripsi.magfira.ambulanceapp.features.order.domain.model.DriversOnData
 
 @Composable
 fun CardMainCustomer(
-    ambulanceActive: Int
+    driversOnData: List<DriversOnData>,
+    toEditLocation: () -> Unit,
+    toOrderDetail: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -68,7 +71,7 @@ fun CardMainCustomer(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
-                    onClick = {}
+                    onClick = { toEditLocation() }
                 ) {
                     val iconEditLocation = Icons.Default.EditLocationAlt
                     Icon(
@@ -93,11 +96,20 @@ fun CardMainCustomer(
                     contentScale = ContentScale.Fit,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Ada $ambulanceActive ambulance disekitar anda yang siap mengantar...",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                if (driversOnData.isEmpty()) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Tidak ada ambulance disekitar anda",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Red,
+                    )
+                } else {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Ada ${driversOnData.size} ambulance disekitar anda yang siap mengantar...",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(24.dp))
             Box(
@@ -108,7 +120,7 @@ fun CardMainCustomer(
                 ButtonIcon(
                     modifier = Modifier,
                     onClick = {
-                        //
+                        toOrderDetail()
                     },
                     icon = Icons.Default.ArrowForwardIos,
                     text = "Pesan",

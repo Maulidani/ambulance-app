@@ -71,7 +71,7 @@ fun CustomerScreen(
         modifier = Modifier.fillMaxWidth(),
         onClick = {
             if (username.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(context, MSG_REQUIRED_FIELDS, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, MSG_REQUIRED_FIELDS, Toast.LENGTH_SHORT).show()
             } else if (!containsNoSpaces(username) || !containsNoSpaces(password)) {
                 Toast.makeText(context, MSG_INPUT_CONTAIN_SPACE, Toast.LENGTH_SHORT).show()
             } else {

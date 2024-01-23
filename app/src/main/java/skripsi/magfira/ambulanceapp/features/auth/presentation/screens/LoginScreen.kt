@@ -24,7 +24,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import skripsi.magfira.ambulanceapp.R
+import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.Login
 import skripsi.magfira.ambulanceapp.features.auth.presentation.components.HeaderScreenLogin
 import skripsi.magfira.ambulanceapp.features.auth.presentation.components.TabViewLogin
@@ -34,6 +37,7 @@ import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.Y
 import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.LoginViewModel
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_LOGIN_FAILED
+import javax.inject.Inject
 
 class LoginScreen(
     private val viewModel: LoginViewModel?,
@@ -42,9 +46,14 @@ class LoginScreen(
     private val TAG = "LoginScreen"
     private val TAB_OPTIONS_ROLES = listOf("Customer", "Driver", "Yayasan")
 
+    @Inject
+    lateinit var dataStorePreferences: DataStorePreferences
+
     @Composable
     fun MainScreen() {
         val context = LocalContext.current
+        dataStorePreferences = DataStorePreferences(context)
+
         val tabOptions = TAB_OPTIONS_ROLES
         var selectedTab by rememberSaveable { mutableStateOf(tabOptions[0]) }
 
@@ -80,9 +89,23 @@ class LoginScreen(
                                 .padding(all = 24.dp)
                         ) {
                             when (currentTab) {
-                                tabOptions[0] -> CustomerScreen(viewModel, navController, context)
-                                tabOptions[1] -> DriverScreen(viewModel, navController, context)
-                                tabOptions[2] -> YayasanScreen(viewModel, navController, context)
+                                tabOptions[0] -> CustomerScreen(
+                                    viewModel,
+                                    navController,
+                                    context
+                                )
+
+                                tabOptions[1] -> DriverScreen(
+                                    viewModel,
+                                    navController,
+                                    context
+                                )
+
+                                tabOptions[2] -> YayasanScreen(
+                                    viewModel,
+                                    navController,
+                                    context
+                                )
                             }
                         }
                     }
@@ -100,6 +123,46 @@ class LoginScreen(
                 tabOptions
             )
         }
+
+        // Check Login
+        LaunchedEffect(true) {
+            val isLogin = dataStorePreferences.getIsLogin.first()
+            val role = dataStorePreferences.getRole.first()
+
+            if (isLogin == true) {
+
+                when (role?.lowercase()) {
+                    tabOptions[0].lowercase() -> {
+                        // Navigate
+                        navController?.navigate(ScreenRouter.Customer.route) {
+                            popUpTo(ScreenRouter.Auth.route) {
+                                inclusive = false
+                            }
+                        }
+                    }
+
+                    tabOptions[1].lowercase() -> {
+                        // Navigate
+                        navController?.navigate(ScreenRouter.Driver.route) {
+                            popUpTo(ScreenRouter.Auth.route) {
+                                inclusive = false
+                            }
+                        }
+                    }
+
+                    tabOptions[2].lowercase() -> {
+                        //Navigate
+                        navController?.navigate(ScreenRouter.Yayasan.route) {
+                            popUpTo(ScreenRouter.Auth.route) {
+                                inclusive = false
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Doing nothing
+            }
+        }
     }
 
     @Composable
@@ -116,37 +179,54 @@ class LoginScreen(
             loginState.isLoading -> {}
             loginState.data != null -> {
                 val loginData = loginState.data
+
+                // Save data login
+                LaunchedEffect(true) {
+                    dataStorePreferences.saveLogin(true)
+                    dataStorePreferences.saveToken(loginData!!.token)
+                    dataStorePreferences.saveRole(selectedTab.lowercase())
+                }
+
+                // Navigate
                 when (selectedTab) {
-                    tabOptions[0] -> NavigateToRoles(
-                        navController,
-                        selectedTab,
-                        loginData,
-                        ScreenRouter.Customer.route,
-                        context
-                    )
+                    tabOptions[0] -> {
+                        NavigateToRoles(
+                            navController,
+                            selectedTab,
+                            loginData,
+                            ScreenRouter.Customer.route,
+                            context
+                        )
+                    }
 
-                    tabOptions[1] -> NavigateToRoles(
-                        navController,
-                        selectedTab,
-                        loginData,
-                        ScreenRouter.Driver.route,
-                        context
-                    )
+                    tabOptions[1] -> {
+                        NavigateToRoles(
+                            navController,
+                            selectedTab,
+                            loginData,
+                            ScreenRouter.Driver.route,
+                            context
+                        )
+                    }
 
-                    tabOptions[2] -> NavigateToRoles(
-                        navController,
-                        selectedTab,
-                        loginData,
-                        ScreenRouter.Yayasan.route,
-                        context
-                    )
+                    tabOptions[2] -> {
+                        NavigateToRoles(
+                            navController,
+                            selectedTab,
+                            loginData,
+                            ScreenRouter.Yayasan.route,
+                            context
+                        )
+                    }
                 }
             }
+
             loginState.error.isNotEmpty() -> {
                 val errorMessage = loginState.error
                 Log.d(TAG, "ViewModelObserver: $errorMessage")
                 Toast.makeText(context, MSG_LOGIN_FAILED, Toast.LENGTH_SHORT).show()
             }
+
             else -> {
                 // Initial state or other cases
             }

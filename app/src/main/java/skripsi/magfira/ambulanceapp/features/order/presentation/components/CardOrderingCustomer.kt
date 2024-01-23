@@ -41,7 +41,8 @@ import skripsi.magfira.ambulanceapp.features.common.presentation.components.Butt
 @Composable
 fun CardOrderingCustomer(
     orderStatus: String,
-    ambulanceStatus: String
+    ambulanceStatus: String,
+    toMainOrder: () -> Unit
 ) {
     val nameDriver = "Testing"
     val phoneDriver = "Testing"
@@ -203,7 +204,7 @@ fun CardOrderingCustomer(
                         ButtonNoIcon(
                             modifier = Modifier.weight(1F),
                             onClick = {
-                                //
+                                toMainOrder()
                             },
                             text = "Selesai",
                             textColor = MaterialTheme.colorScheme.primary,

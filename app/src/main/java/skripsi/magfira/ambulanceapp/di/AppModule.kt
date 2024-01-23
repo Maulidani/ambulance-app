@@ -10,9 +10,13 @@ import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.AuthApi
 import skripsi.magfira.ambulanceapp.features.auth.data.repository.AuthRepositoryImpl
 import skripsi.magfira.ambulanceapp.features.auth.domain.repository.AuthRepository
+import skripsi.magfira.ambulanceapp.features.order.data.remote.OrderApi
+import skripsi.magfira.ambulanceapp.features.order.data.repository.OrderRepositoryImpl
+import skripsi.magfira.ambulanceapp.features.order.domain.repository.OrderRepository
 import skripsi.magfira.ambulanceapp.util.NetworkUtils
 import javax.inject.Singleton
 
@@ -49,6 +53,12 @@ object AppModule {
             }
             .build()
 
+    @Singleton
+    @Provides
+    fun provideDataStorePreferences(dataStorePreferences: DataStorePreferences): DataStorePreferences =
+        dataStorePreferences
+
+    // Network
     // Auth
     @Provides
     @Singleton
@@ -61,10 +71,30 @@ object AppModule {
             .create(AuthApi::class.java)
     }
 
+    // Auth Repo
     @Provides
     @Singleton
     fun provideAuthRepository(api: AuthApi): AuthRepository {
         return AuthRepositoryImpl(api)
+    }
+
+    // Order
+    @Provides
+    @Singleton
+    fun provideOrderApi(okHttpClient: OkHttpClient): OrderApi {
+        return Retrofit.Builder()
+            .baseUrl(NetworkUtils.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(OrderApi::class.java)
+    }
+
+    // Order Repo
+    @Provides
+    @Singleton
+    fun provideOrderRepository(api: OrderApi): OrderRepository {
+        return OrderRepositoryImpl(api)
     }
 
 }

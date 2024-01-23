@@ -1,38 +1,77 @@
 package skripsi.magfira.ambulanceapp.features.order.presentation.screens.customer
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.flow.first
+import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBarHome
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.MapView
+import skripsi.magfira.ambulanceapp.features.order.domain.model.DriversOnData
+import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardDetailOrderCustomer
+import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardEditLocationCustomer
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardMainCustomer
+import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardOrderingCustomer
+import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_NONE_AMBULANCE_ACTIVE
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_UNAUTHORIZED
+import skripsi.magfira.ambulanceapp.util.locationUpdate
 import skripsi.magfira.ambulanceapp.util.requestAllPermissions
+import skripsi.magfira.ambulanceapp.util.stopLocationUpdate
+import javax.inject.Inject
 
 class HomeCustomerScreen(
-    private val viewModel: Any?,
+    private val viewModel: OrderViewModel,
     private val navController: NavHostController?
 ) {
+    private val TAG = "HomeCustomerScreen"
+    private val ORDERING_FLOW = listOf("Main", "Change Location", "Detail", "Ordering")
+
+    @Inject
+    lateinit var dataStorePreferences: DataStorePreferences
+
     @Composable
     fun MainScreen() {
         val context = LocalContext.current
-        requestAllPermissions(context)
 
-        val ambulanceActive = 999
+        dataStorePreferences = DataStorePreferences(context)
+
+        if (requestAllPermissions(context = context)) {
+            viewModel.initializeLocation(context = context)
+        } else {
+            // Not granted
+        }
+
+        var orderingStack by rememberSaveable { mutableStateOf(listOf(ORDERING_FLOW[0])) }
+        var driversOn by remember { mutableStateOf(listOf<DriversOnData>()) }
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            MapView()
+            MapView(
+                viewModel = viewModel,
+                driversOnData = driversOn,
+                context = context
+            )
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -49,17 +88,165 @@ class HomeCustomerScreen(
                         .fillMaxWidth()
                         .background(Color.Transparent),
                 )
-                CardMainCustomer(ambulanceActive = ambulanceActive)
-//                CardEditLocationCustomer(iconBackClick = {})
-//                CardDetailOrderCustomer()
-//                CardOrderingCustomer("bla", "bla")
+                Log.d(TAG, "Ordering Stack: $orderingStack")
+                when (orderingStack.lastOrNull()) {
+                    ORDERING_FLOW[0] -> {
+                        if (requestAllPermissions(context = context)) {
+                            locationUpdate()
+                            viewModel.editableLocation(false)
+                        } else {
+                            // Not granted
+                        }
+                        CardMainCustomer(
+                            driversOnData = driversOn,
+                            toEditLocation = {
+                                orderingStack = orderingStack + ORDERING_FLOW[1]
+                            },
+                            toOrderDetail = {
+                                if (driversOn.isNotEmpty()) {
+                                    orderingStack = orderingStack + ORDERING_FLOW[2]
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        MSG_NONE_AMBULANCE_ACTIVE,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        )
+                    }
+
+                    ORDERING_FLOW[1] -> {
+                        if (requestAllPermissions(context = context)) {
+                            stopLocationUpdate()
+                            viewModel.editableLocation(true)
+                        } else {
+                            // Not granted
+                        }
+                        CardEditLocationCustomer(
+                            iconBackClick = {
+                                orderingStack = orderingStack.dropLast(1) + ORDERING_FLOW[0]
+                            },
+                        )
+                    }
+
+                    ORDERING_FLOW[2] -> {
+                        if (requestAllPermissions(context = context)) {
+                            stopLocationUpdate()
+                            viewModel.editableLocation(false)
+                        } else {
+                            // Not granted
+                        }
+                        CardDetailOrderCustomer(
+                            iconBackClick = {
+                                orderingStack = orderingStack.dropLast(1) + ORDERING_FLOW[0]
+                            },
+                            toOrdering = {
+                                orderingStack = orderingStack + ORDERING_FLOW[3]
+                            }
+                        )
+                    }
+
+                    ORDERING_FLOW[3] -> {
+                        if (requestAllPermissions(context = context)) {
+                            stopLocationUpdate()
+                            viewModel.editableLocation(false)
+                        } else {
+                            // Not granted
+                        }
+                        if (requestAllPermissions(context = context)) {
+                            stopLocationUpdate()
+                        } else {
+                            // Not granted
+                        }
+                        CardOrderingCustomer(
+                            "bla",
+                            "bla",
+                            toMainOrder = {
+                                orderingStack = listOf(ORDERING_FLOW[0])
+                            }
+                        )
+                    }
+
+                    else -> {
+                        // Default case
+                    }
+                }
             }
         }
+
+        // Check Login
+        LaunchedEffect(true) {
+            val isLogin = dataStorePreferences.getIsLogin.first()
+            val token = dataStorePreferences.getToken.first()
+
+            if (isLogin == true) {
+                viewModel?.token = token ?: ""
+
+            } else {
+                // Not Login
+
+            }
+        }
+
+        // Get driveres on
+        LaunchedEffect(driversOn) {
+            viewModel?.driversOn()
+        }
+
+        // Observe ViewModel
+        viewModel?.let {
+            ViewModelObserver(
+                it,
+                onDriversUpdated = { updatedDrivers ->
+                    driversOn = updatedDrivers
+                },
+                context,
+            )
+        }
+    }
+
+    @Composable
+    fun ViewModelObserver(
+        viewModel: OrderViewModel,
+        onDriversUpdated: (List<DriversOnData>) -> Unit,
+        context: Context,
+    ) {
+        val driversOnState = viewModel.stateDriversOn
+
+        when {
+            driversOnState.isLoading -> {}
+
+            driversOnState.data != null -> {
+                val driversData = driversOnState.data
+                onDriversUpdated(driversData!!.data)
+            }
+
+            driversOnState.error.isNotEmpty() -> {
+                val errorMessage = driversOnState.error
+                Log.d(TAG, "ViewModelObserver: $errorMessage")
+                Toast.makeText(context, MSG_UNAUTHORIZED, Toast.LENGTH_SHORT).show()
+
+                // Unauthorized
+                LaunchedEffect(errorMessage) {
+                    navController?.navigate(ScreenRouter.Auth.route) {
+                        popUpTo(ScreenRouter.Customer.route) {
+                            inclusive = false
+                        }
+                    }
+                }
+            }
+
+            else -> {
+                // Initial state or other cases
+            }
+        }
+
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeCustomerScreenPreview() {
-    HomeCustomerScreen(null, null).MainScreen()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeCustomerScreenPreview() {
+//    HomeCustomerScreen(null, null).MainScreen()
+//}

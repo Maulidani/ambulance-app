@@ -4,6 +4,7 @@ object NetworkUtils {
 
     // API
     const val BASE_URL = "http://10.0.2.2:8000/api/"
+    const val BASE_URL_FILE = "http://10.0.2.2:8000/storage/file/"
 
     // Name Key api/route query
     const val NAME_KEY_NAME = "name"

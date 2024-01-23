@@ -2,18 +2,23 @@ package skripsi.magfira.ambulanceapp.features.order.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,10 +31,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
+import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonNoIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldOutlinedForm
 
 @Composable
-fun CardDetailOrderCustomer() {
+fun CardDetailOrderCustomer(
+    iconBackClick: () -> Unit,
+    toOrdering: () -> Unit
+) {
     val orderName = remember { mutableStateOf("") }
     val orderLocation = remember { mutableStateOf("") }
     val orderDetailLocation = remember { mutableStateOf("") }
@@ -75,21 +84,34 @@ fun CardDetailOrderCustomer() {
                 icon = Icons.Default.Edit
             )
             Spacer(modifier = Modifier.height(24.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.CenterEnd
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                ButtonIcon(
-                    modifier = Modifier,
-                    onClick = {
-                        //
-                    },
-                    icon = Icons.Default.ArrowForwardIos,
-                    text = "Pesan Sekarang",
-                    textColor = Color.White,
-                    backgroundColor = MaterialTheme.colorScheme.primary,
+                val iconBack = Icons.Default.ArrowBack
+                Icon(
+                    modifier = Modifier
+                        .clickable { iconBackClick() },
+                    imageVector = iconBack,
+                    contentDescription = iconBack.toString(),
+                    tint = MaterialTheme.colorScheme.onBackground,
                 )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    ButtonIcon(
+                        modifier = Modifier,
+                        onClick = {
+                            toOrdering()
+                        },
+                        icon = Icons.Default.ArrowForwardIos,
+                        text = "Pesan Sekarang",
+                        textColor = Color.White,
+                        backgroundColor = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
         }
     }

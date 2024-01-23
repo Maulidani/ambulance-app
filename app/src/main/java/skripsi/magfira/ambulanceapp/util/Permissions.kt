@@ -31,12 +31,14 @@ fun requestAllPermissions(context: Context): Boolean {
         arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
             Manifest.permission.READ_MEDIA_IMAGES, // minSdkVersion = 33
         )
     } else {
         arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
             Manifest.permission.READ_EXTERNAL_STORAGE, // maxSdkVersion = 32
         )
     }

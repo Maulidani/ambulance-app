@@ -1,6 +1,5 @@
 package skripsi.magfira.ambulanceapp.features.common.presentation.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -21,13 +19,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
 import skripsi.magfira.ambulanceapp.R
+import skripsi.magfira.ambulanceapp.features.order.domain.model.DriversOnData
+import skripsi.magfira.ambulanceapp.util.NetworkUtils.BASE_URL_FILE
 
 @Composable
-fun MarkerMapDetail() {
+fun MarkerMapDetail(
+    driverOnData: DriversOnData
+) {
     Surface(
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
         color = Color.Transparent
@@ -52,7 +58,8 @@ fun MarkerMapDetail() {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Testing",
+                    text = "Aktif",
+                    color = Color.Green,
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -62,22 +69,31 @@ fun MarkerMapDetail() {
                 horizontalArrangement = Arrangement.Start,
             ) {
 
-                val nameDriver = "Testing"
-                val phoneDriver = "Testing"
-                val nameYayasanDriver = "Testing"
-                val imageDriver = painterResource(id = R.drawable.logo_only)
+                val nameDriver = driverOnData.name
+                val phoneDriver = driverOnData.no_telp
+                val nameYayasanDriver = driverOnData.yayasan.name
+                val photoDriver = BASE_URL_FILE + driverOnData.foto_profil
+
                 Surface(
                     modifier = Modifier
                         .height(64.dp)
                         .width(48.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
+                    val painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(photoDriver)
+                            .size(Size.ORIGINAL)
+                            .allowHardware(false)
+                            .build()
+                    )
+
                     Image(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color.Gray),
-                        painter = imageDriver,
-                        contentDescription = imageDriver.toString(),
+                            .background(Color.Transparent),
+                        painter = painter,
+                        contentDescription = painter.toString(),
                         contentScale = ContentScale.Fit,
                     )
                 }
@@ -90,7 +106,7 @@ fun MarkerMapDetail() {
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = phoneDriver,
+                        text = phoneDriver ?: "-",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )

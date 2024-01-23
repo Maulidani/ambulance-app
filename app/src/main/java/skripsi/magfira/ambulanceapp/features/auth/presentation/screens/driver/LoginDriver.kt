@@ -70,7 +70,8 @@ fun DriverScreen(
             if (username.isEmpty() || password.isEmpty()) {
                 Toast.makeText(context, MessageUtils.MSG_REQUIRED_FIELDS, Toast.LENGTH_SHORT).show()
             } else if (!containsNoSpaces(username) || !containsNoSpaces(password)) {
-                Toast.makeText(context, MessageUtils.MSG_INPUT_CONTAIN_SPACE, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, MessageUtils.MSG_INPUT_CONTAIN_SPACE, Toast.LENGTH_SHORT)
+                    .show()
             } else {
                 val loginRequest = LoginRequest(username, password)
                 viewModel?.login(loginRequest)
