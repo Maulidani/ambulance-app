@@ -10,54 +10,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a8acd819-26ed-4d0b-8a63-0768bb02cb11" name="Changes" comment="Update">
-      <change afterPath="$PROJECT_DIR$/.idea/assetWizardSettings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/datastore/DataStorePreferences.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/data/repository/OrderRepositoryImpl.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/data/use_case/OrderUseCase.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/domain/repository/OrderRepository.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/presentation/data_states/DriversOnState.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/presentation/view_models/OrderViewModel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/util/LocationServices.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.0/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.0/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.0/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.0/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.0/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.0/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.0/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.0/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.0/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.0/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.0/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.0/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/Ambulance_App.app.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/di/AppModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/di/AppModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/LoginScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/LoginScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/customer/LoginCustomer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/customer/LoginCustomer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/datastore/DataStorePreferences.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/datastore/DataStorePreferences.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/customer/ProfileCustomerScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/customer/ProfileCustomerScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/driver/LoginDriver.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/driver/LoginDriver.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/yayasan/LoginYayasan.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/yayasan/LoginYayasan.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/customer/RegisterAccountCustomerScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/customer/RegisterAccountCustomerScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/driver/ProfileDriverScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/driver/ProfileDriverScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/yayasan/ProfileYayasanScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/yayasan/ProfileYayasanScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/yayasan/RegisterAccountYayasanScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/auth/presentation/screens/yayasan/RegisterAccountYayasanScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/common/presentation/components/ImageView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/common/presentation/components/ImageView.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/common/presentation/components/MapView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/common/presentation/components/MapView.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/common/presentation/components/MarkerMapDetail.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/common/presentation/components/MarkerMapDetail.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/data/remote/AuthOrder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/data/remote/OrderApi.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/data/remote/dto/DriversOnDto.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/data/remote/dto/DriversOnDto.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/domain/model/DriversOn.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/domain/model/DriversOn.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/presentation/components/CardDetailOrderCustomer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/presentation/components/CardDetailOrderCustomer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/presentation/components/CardMainCustomer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/presentation/components/CardMainCustomer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/presentation/components/CardOrderingCustomer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/presentation/components/CardOrderingCustomer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/presentation/screens/customer/HomeCustomerScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/features/order/presentation/screens/customer/HomeCustomerScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/navigation/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/navigation/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/util/LocationServices.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/util/LocationServices.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/util/MessageUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/util/MessageUtils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/util/NetworkUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/util/NetworkUtils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/util/Permissions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/skripsi/magfira/ambulanceapp/util/Permissions.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[/Users/maulidanimahmud/.android/avd/Pixel_7_API_32.avd]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[/Users/maulidanimahmud/.android/avd/Pixel_6a_API_31.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -313,7 +287,14 @@
       <option name="project" value="LOCAL" />
       <updated>1704707574026</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Update">
+      <created>1706012967212</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1706012967212</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

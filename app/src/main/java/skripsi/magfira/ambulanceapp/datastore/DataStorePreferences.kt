@@ -44,6 +44,7 @@ class DataStorePreferences @Inject constructor(@ApplicationContext private val c
             if (!isLogin) {
                 // If isLogin is false, delete other preferences
                 preferences.remove(USER_TOKEN_KEY)
+                preferences.remove(USER_ROLE_KEY)
                 // Add other keys to remove as needed
             }
         }

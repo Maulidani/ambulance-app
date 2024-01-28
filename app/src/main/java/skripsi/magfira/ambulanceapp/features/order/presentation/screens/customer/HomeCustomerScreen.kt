@@ -31,8 +31,10 @@ import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardM
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardOrderingCustomer
 import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_DO_NOT_HAS_LOCATION_PERMISSION
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_NONE_AMBULANCE_ACTIVE
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_UNAUTHORIZED
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_WAITING_DRIVER_AMBULANCE
 import skripsi.magfira.ambulanceapp.util.locationUpdate
 import skripsi.magfira.ambulanceapp.util.requestAllPermissions
 import skripsi.magfira.ambulanceapp.util.stopLocationUpdate
@@ -58,10 +60,12 @@ class HomeCustomerScreen(
             viewModel.initializeLocation(context = context)
         } else {
             // Not granted
+            Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
         }
 
         var orderingStack by rememberSaveable { mutableStateOf(listOf(ORDERING_FLOW[0])) }
         var driversOn by remember { mutableStateOf(listOf<DriversOnData>()) }
+        var isOrderAccepted by remember { mutableStateOf(false) }
 
         Box(
             modifier = Modifier
@@ -70,6 +74,7 @@ class HomeCustomerScreen(
             MapView(
                 viewModel = viewModel,
                 driversOnData = driversOn,
+                isOrderAccepted = isOrderAccepted,
                 context = context
             )
             Column(
@@ -122,6 +127,7 @@ class HomeCustomerScreen(
                             viewModel.editableLocation(true)
                         } else {
                             // Not granted
+                            Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
                         }
                         CardEditLocationCustomer(
                             iconBackClick = {
@@ -136,8 +142,12 @@ class HomeCustomerScreen(
                             viewModel.editableLocation(false)
                         } else {
                             // Not granted
+                            Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
                         }
                         CardDetailOrderCustomer(
+                            viewModel = viewModel,
+                            dataStorePreferences = dataStorePreferences,
+                            context = context,
                             iconBackClick = {
                                 orderingStack = orderingStack.dropLast(1) + ORDERING_FLOW[0]
                             },
@@ -153,15 +163,13 @@ class HomeCustomerScreen(
                             viewModel.editableLocation(false)
                         } else {
                             // Not granted
+                            Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
                         }
-                        if (requestAllPermissions(context = context)) {
-                            stopLocationUpdate()
-                        } else {
-                            // Not granted
-                        }
+
                         CardOrderingCustomer(
-                            "bla",
-                            "bla",
+                            viewModel,
+                            context,
+                            isOrderAccepted,
                             toMainOrder = {
                                 orderingStack = listOf(ORDERING_FLOW[0])
                             }
@@ -181,29 +189,34 @@ class HomeCustomerScreen(
             val token = dataStorePreferences.getToken.first()
 
             if (isLogin == true) {
-                viewModel?.token = token ?: ""
+                viewModel.token = token ?: ""
 
             } else {
                 // Not Login
+                Toast.makeText(context, MSG_UNAUTHORIZED, Toast.LENGTH_SHORT).show()
 
+                // Unauthorized
+                navController?.navigate(ScreenRouter.Auth.route) {
+                    popUpTo(ScreenRouter.Customer.route) {
+                        inclusive = false
+                    }
+                }
             }
         }
 
         // Get driveres on
         LaunchedEffect(driversOn) {
-            viewModel?.driversOn()
+            viewModel.driversOn()
         }
 
         // Observe ViewModel
-        viewModel?.let {
-            ViewModelObserver(
-                it,
-                onDriversUpdated = { updatedDrivers ->
-                    driversOn = updatedDrivers
-                },
-                context,
-            )
-        }
+        ViewModelObserver(
+            viewModel,
+            onDriversUpdated = { updatedDrivers ->
+                driversOn = updatedDrivers
+            },
+            context,
+        )
     }
 
     @Composable
@@ -225,16 +238,6 @@ class HomeCustomerScreen(
             driversOnState.error.isNotEmpty() -> {
                 val errorMessage = driversOnState.error
                 Log.d(TAG, "ViewModelObserver: $errorMessage")
-                Toast.makeText(context, MSG_UNAUTHORIZED, Toast.LENGTH_SHORT).show()
-
-                // Unauthorized
-                LaunchedEffect(errorMessage) {
-                    navController?.navigate(ScreenRouter.Auth.route) {
-                        popUpTo(ScreenRouter.Customer.route) {
-                            inclusive = false
-                        }
-                    }
-                }
             }
 
             else -> {

@@ -77,13 +77,13 @@ fun getReadableLocation(latitude: Double, longitude: Double, context: Context): 
 
         if (addresses?.isNotEmpty() == true) {
             val address = addresses[0]
-            addressText = "${address.getAddressLine(0)}, ${address.locality}"
+            addressText = "${address.subLocality}, ${address.locality}"
             // Use the addressText in your app
-            Log.d("geolocation", addressText)
+            Log.d(TAG, "getReadableLocation: $addressText")
         }
 
     } catch (e: IOException) {
-        Log.d("geolocation", e.message.toString())
+        Log.d(TAG, "getReadableLocation: ${e.message}")
 
     }
 

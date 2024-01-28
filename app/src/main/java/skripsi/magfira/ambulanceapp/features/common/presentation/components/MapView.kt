@@ -24,24 +24,34 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import skripsi.magfira.ambulanceapp.R
 import skripsi.magfira.ambulanceapp.features.order.domain.model.DriversOnData
 import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
+import skripsi.magfira.ambulanceapp.util.MessageUtils
 import skripsi.magfira.ambulanceapp.util.getReadableLocation
 import skripsi.magfira.ambulanceapp.util.requestAllPermissions
+import skripsi.magfira.ambulanceapp.util.stopLocationUpdate
 
 @Composable
 fun MapView(
     viewModel: OrderViewModel,
     driversOnData: List<DriversOnData>,
+    isOrderAccepted: Boolean,
     context: Context
 ) {
     if (requestAllPermissions(context = context)) {
         viewModel.initializeLocation(context = context)
     } else {
         // Not granted
+        Toast.makeText(context, MessageUtils.MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
     }
+
     var myLocation = viewModel.currentLocation
-//    var myLocation by rememberSaveable { mutableStateOf(currentLocation) }
     var editableMyLocation = viewModel.editableMyLocation
+//    var myLocation by rememberSaveable { mutableStateOf(currentLocation) }
 //    var editableMyLocation by rememberSaveable { mutableStateOf(viewModel.editableMyLocation)}
+
+    // In ordering state
+    if (isOrderAccepted) {
+        stopLocationUpdate()
+    }
 
     Log.d("MapView", "myLocation: $myLocation")
     Log.d("MapView", "myLocation : ${getReadableLocation(myLocation.latitude, myLocation.longitude, context)}")
