@@ -27,7 +27,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import skripsi.magfira.ambulanceapp.R
-import skripsi.magfira.ambulanceapp.features.order.domain.model.DriversOnData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOnData
 import skripsi.magfira.ambulanceapp.util.NetworkUtils.BASE_URL_FILE
 
 @Composable

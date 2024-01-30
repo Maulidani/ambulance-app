@@ -1,8 +1,8 @@
 package skripsi.magfira.ambulanceapp.features.order.data.remote.dto
 
-import skripsi.magfira.ambulanceapp.features.order.domain.model.DriversOn
-import skripsi.magfira.ambulanceapp.features.order.domain.model.DriversOnData
-import skripsi.magfira.ambulanceapp.features.order.domain.model.YayasanData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOn
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOnData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.YayasanData
 
 data class DriversOnDto(
     val success: Boolean,
@@ -10,9 +10,9 @@ data class DriversOnDto(
     val data: List<DriversOnDataDto>
 )
 data class DriversOnDataDto(
-    val id: Int,
+    val id: Long,
     val roles: String,
-    val yayasan_id: Int,
+    val yayasan_id: Long,
     val status_akun: String,
     val status_login: String,
     val name: String,
@@ -29,7 +29,7 @@ data class DriversOnDataDto(
     val yayasan: YayasanDataDto
 )
 data class YayasanDataDto(
-    val id: Int,
+    val id: Long,
     val roles: String,
     val status_akun: String,
     val status_login: String,

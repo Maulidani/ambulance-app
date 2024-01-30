@@ -18,13 +18,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import com.pusher.client.Pusher
+import com.pusher.client.connection.ConnectionEventListener
+import com.pusher.client.connection.ConnectionState
+import com.pusher.client.connection.ConnectionStateChange
 import kotlinx.coroutines.flow.first
 import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBarHome
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.MapView
-import skripsi.magfira.ambulanceapp.features.order.domain.model.DriversOnData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOnData
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardDetailOrderCustomer
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardEditLocationCustomer
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardMainCustomer
@@ -34,7 +37,6 @@ import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_DO_NOT_HAS_LOCATION_PERMISSION
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_NONE_AMBULANCE_ACTIVE
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_UNAUTHORIZED
-import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_WAITING_DRIVER_AMBULANCE
 import skripsi.magfira.ambulanceapp.util.locationUpdate
 import skripsi.magfira.ambulanceapp.util.requestAllPermissions
 import skripsi.magfira.ambulanceapp.util.stopLocationUpdate
@@ -50,6 +52,9 @@ class HomeCustomerScreen(
     @Inject
     lateinit var dataStorePreferences: DataStorePreferences
 
+    @Inject
+    lateinit var pusher: Pusher
+
     @Composable
     fun MainScreen() {
         val context = LocalContext.current
@@ -57,7 +62,10 @@ class HomeCustomerScreen(
         dataStorePreferences = DataStorePreferences(context)
 
         if (requestAllPermissions(context = context)) {
-            viewModel.initializeLocation(context = context)
+            // Initialize location
+            if (!viewModel.currentLocationInitialized) {
+                viewModel.InitializeLocation(context = context)
+            }
         } else {
             // Not granted
             Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
@@ -97,10 +105,13 @@ class HomeCustomerScreen(
                 when (orderingStack.lastOrNull()) {
                     ORDERING_FLOW[0] -> {
                         if (requestAllPermissions(context = context)) {
-                            locationUpdate()
+                            if (!viewModel.currentLocationInitialized) {
+                                locationUpdate()
+                            }
                             viewModel.editableLocation(false)
                         } else {
                             // Not granted
+                            Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
                         }
                         CardMainCustomer(
                             driversOnData = driversOn,
@@ -217,6 +228,27 @@ class HomeCustomerScreen(
             },
             context,
         )
+    }
+
+    fun connectPusher() {
+        pusher.connect(object : ConnectionEventListener {
+            override fun onConnectionStateChange(change: ConnectionStateChange) {
+                Log.d(TAG, "Pusher: State changed from ${change.previousState} to ${change.currentState}")
+            }
+
+            override fun onError(
+                message: String,
+                code: String,
+                e: Exception
+            ) {
+                Log.d(TAG, "Pusher: There was a problem connecting! code ($code), message ($message), exception($e)")
+            }
+        }, ConnectionState.ALL)
+
+        val channel = pusher.subscribe("my-channel")
+        channel.bind("my-event") { event ->
+            Log.d(TAG,"Pusher: Received event with data: $event")
+        }
     }
 
     @Composable

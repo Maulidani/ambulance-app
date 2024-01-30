@@ -5,18 +5,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import skripsi.magfira.ambulanceapp.features.order.data.use_case.OrderUseCase
+import skripsi.magfira.ambulanceapp.features.order.domain.model.request.OrderRequest
 import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.DriversOnState
+import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.OrderBookingState
 import skripsi.magfira.ambulanceapp.util.LocationProvider
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_UNEXPECTED_ERROR
 import skripsi.magfira.ambulanceapp.util.Resource
@@ -31,13 +29,16 @@ class OrderViewModel @Inject constructor(
 
     var currentLocation by mutableStateOf(LatLng(0.0, 0.0))
         private set
+    var currentLocationInitialized by mutableStateOf(false)
+        private set
     var editableMyLocation by mutableStateOf(false)
         private set
 
     @Composable
-    fun initializeLocation(context: Context) {
+    fun InitializeLocation(context: Context) {
         LocationProvider(context) {
             currentLocation = LatLng(it.latitude, it.longitude)
+            currentLocationInitialized = true
         }
     }
     fun editableLocation(isEditable: Boolean) {
@@ -45,6 +46,9 @@ class OrderViewModel @Inject constructor(
     }
 
     var stateDriversOn by mutableStateOf(DriversOnState())
+        private set
+
+    var stateOrderBooking by mutableStateOf(OrderBookingState())
         private set
 
     fun driversOn() {
@@ -64,6 +68,30 @@ class OrderViewModel @Inject constructor(
 
                 is Resource.Error -> {
                     stateDriversOn = DriversOnState(
+                        error = result.message ?: MSG_UNEXPECTED_ERROR
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun orderBooking(orderRequest: OrderRequest) {
+        orderUseCase.orderBooking("Bearer $token", orderRequest).onEach { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    stateOrderBooking = OrderBookingState(
+                        isLoading = true
+                    )
+                }
+
+                is Resource.Success -> {
+                    stateOrderBooking = OrderBookingState(
+                        data = result.data
+                    )
+                }
+
+                is Resource.Error -> {
+                    stateOrderBooking = OrderBookingState(
                         error = result.message ?: MSG_UNEXPECTED_ERROR
                     )
                 }

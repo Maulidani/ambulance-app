@@ -1,5 +1,7 @@
 package skripsi.magfira.ambulanceapp.di
 
+import com.pusher.client.Pusher
+import com.pusher.client.PusherOptions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -95,6 +97,15 @@ object AppModule {
     @Singleton
     fun provideOrderRepository(api: OrderApi): OrderRepository {
         return OrderRepositoryImpl(api)
+    }
+
+    // Pusher WebSocket
+    @Provides
+    @Singleton
+    fun providePusher(): Pusher {
+        val options = PusherOptions()
+        options.setCluster(NetworkUtils.APP_CLUSTER)
+        return Pusher(NetworkUtils.APP_KEY, options)
     }
 
 }

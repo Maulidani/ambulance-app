@@ -1,6 +1,6 @@
 package skripsi.magfira.ambulanceapp.features.order.presentation.data_states
 
-import skripsi.magfira.ambulanceapp.features.order.domain.model.DriversOn
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOn
 
 data class DriversOnState(
     val isLoading: Boolean = false,

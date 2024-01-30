@@ -22,7 +22,7 @@ import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import skripsi.magfira.ambulanceapp.R
-import skripsi.magfira.ambulanceapp.features.order.domain.model.DriversOnData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOnData
 import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
 import skripsi.magfira.ambulanceapp.util.MessageUtils
 import skripsi.magfira.ambulanceapp.util.getReadableLocation
@@ -36,14 +36,16 @@ fun MapView(
     isOrderAccepted: Boolean,
     context: Context
 ) {
+    val TAG = "MapView"
+
     if (requestAllPermissions(context = context)) {
-        viewModel.initializeLocation(context = context)
+        viewModel.InitializeLocation(context = context)
     } else {
         // Not granted
         Toast.makeText(context, MessageUtils.MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
     }
 
-    var myLocation = viewModel.currentLocation
+    var myLocation by rememberSaveable { mutableStateOf(viewModel.currentLocation) }
     var editableMyLocation = viewModel.editableMyLocation
 //    var myLocation by rememberSaveable { mutableStateOf(currentLocation) }
 //    var editableMyLocation by rememberSaveable { mutableStateOf(viewModel.editableMyLocation)}
@@ -53,8 +55,9 @@ fun MapView(
         stopLocationUpdate()
     }
 
-    Log.d("MapView", "myLocation: $myLocation")
-    Log.d("MapView", "myLocation : ${getReadableLocation(myLocation.latitude, myLocation.longitude, context)}")
+    Log.d(TAG, "myLocation editable: ${viewModel.editableMyLocation}")
+    Log.d(TAG, "myLocation: $myLocation")
+    Log.d(TAG, "myLocation : ${getReadableLocation(myLocation.latitude, myLocation.longitude, context)}")
 
     Box(
         modifier = Modifier
@@ -67,8 +70,9 @@ fun MapView(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             onMapClick = {
-                if (editableMyLocation) {
+                if (viewModel.editableMyLocation) {
                     myLocation = it
+                    Log.d(TAG, "myLocation editable: edit marker")
                 }
             }) {
 

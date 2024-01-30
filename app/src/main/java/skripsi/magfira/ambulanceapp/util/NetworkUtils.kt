@@ -6,6 +6,10 @@ object NetworkUtils {
     const val BASE_URL = "http://10.0.2.2:8000/api/"
     const val BASE_URL_FILE = "http://10.0.2.2:8000/storage/file/"
 
+    // Pusher
+    const val APP_KEY = "07e2d415003b6691c650"
+    const val APP_CLUSTER = "ap1"
+
     // Name Key api/route query
     const val NAME_KEY_NAME = "name"
     const val NAME_KEY_EMAIL = "email"

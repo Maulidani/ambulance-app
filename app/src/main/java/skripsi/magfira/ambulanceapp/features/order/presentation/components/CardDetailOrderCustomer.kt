@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
-import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonNoIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldOutlinedForm
 import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
 import skripsi.magfira.ambulanceapp.util.MessageUtils
@@ -54,7 +52,7 @@ fun CardDetailOrderCustomer(
     toOrdering: () -> Unit
 ) {
     if (requestAllPermissions(context = context)) {
-        viewModel.initializeLocation(context = context)
+        viewModel.InitializeLocation(context = context)
     } else {
         // Not granted
         Toast.makeText(context, MessageUtils.MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
