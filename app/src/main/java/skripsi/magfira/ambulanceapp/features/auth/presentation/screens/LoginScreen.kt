@@ -24,7 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import skripsi.magfira.ambulanceapp.R
 import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
@@ -34,13 +33,13 @@ import skripsi.magfira.ambulanceapp.features.auth.presentation.components.TabVie
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.customer.CustomerScreen
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.driver.DriverScreen
 import skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan.YayasanScreen
-import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.LoginViewModel
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_LOGIN_FAILED
 import javax.inject.Inject
 
 class LoginScreen(
-    private val viewModel: LoginViewModel?,
+    private val viewModel: AuthViewModel?,
     private val navController: NavHostController?
 ) {
     private val TAG = "LoginScreen"
@@ -56,6 +55,46 @@ class LoginScreen(
 
         val tabOptions = TAB_OPTIONS_ROLES
         var selectedTab by rememberSaveable { mutableStateOf(tabOptions[0]) }
+
+        // Check Login
+        LaunchedEffect(true) {
+            val isLogin = dataStorePreferences.getUserIsLogin.first()
+            val role = dataStorePreferences.getUserRole.first()
+
+            if (isLogin == true) {
+
+                when (role?.lowercase()) {
+                    tabOptions[0].lowercase() -> {
+                        // Navigate
+                        navController?.navigate(ScreenRouter.Customer.route) {
+                            popUpTo(ScreenRouter.Auth.route) {
+                                inclusive = false
+                            }
+                        }
+                    }
+
+                    tabOptions[1].lowercase() -> {
+                        // Navigate
+                        navController?.navigate(ScreenRouter.Driver.route) {
+                            popUpTo(ScreenRouter.Auth.route) {
+                                inclusive = false
+                            }
+                        }
+                    }
+
+                    tabOptions[2].lowercase() -> {
+                        //Navigate
+                        navController?.navigate(ScreenRouter.Yayasan.route) {
+                            popUpTo(ScreenRouter.Auth.route) {
+                                inclusive = false
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Doing nothing
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -124,50 +163,11 @@ class LoginScreen(
             )
         }
 
-        // Check Login
-        LaunchedEffect(true) {
-            val isLogin = dataStorePreferences.getIsLogin.first()
-            val role = dataStorePreferences.getRole.first()
-
-            if (isLogin == true) {
-
-                when (role?.lowercase()) {
-                    tabOptions[0].lowercase() -> {
-                        // Navigate
-                        navController?.navigate(ScreenRouter.Customer.route) {
-                            popUpTo(ScreenRouter.Auth.route) {
-                                inclusive = false
-                            }
-                        }
-                    }
-
-                    tabOptions[1].lowercase() -> {
-                        // Navigate
-                        navController?.navigate(ScreenRouter.Driver.route) {
-                            popUpTo(ScreenRouter.Auth.route) {
-                                inclusive = false
-                            }
-                        }
-                    }
-
-                    tabOptions[2].lowercase() -> {
-                        //Navigate
-                        navController?.navigate(ScreenRouter.Yayasan.route) {
-                            popUpTo(ScreenRouter.Auth.route) {
-                                inclusive = false
-                            }
-                        }
-                    }
-                }
-            } else {
-                // Doing nothing
-            }
-        }
     }
 
     @Composable
     fun ViewModelObserver(
-        viewModel: LoginViewModel,
+        viewModel: AuthViewModel,
         navController: NavHostController?,
         context: Context,
         selectedTab: String,
@@ -178,12 +178,13 @@ class LoginScreen(
         when {
             loginState.isLoading -> {}
             loginState.data != null -> {
-                val loginData = loginState.data
+                val loginData = loginState.data!!
 
                 // Save data login
                 LaunchedEffect(true) {
                     dataStorePreferences.saveLogin(true)
-                    dataStorePreferences.saveToken(loginData!!.token)
+                    dataStorePreferences.saveToken(loginData.token)
+                    dataStorePreferences.saveUserId(loginData.user.id.toString())
                     dataStorePreferences.saveRole(selectedTab.lowercase())
                 }
 
@@ -224,7 +225,10 @@ class LoginScreen(
             loginState.error.isNotEmpty() -> {
                 val errorMessage = loginState.error
                 Log.d(TAG, "ViewModelObserver: $errorMessage")
-                Toast.makeText(context, MSG_LOGIN_FAILED, Toast.LENGTH_SHORT).show()
+
+                LaunchedEffect(loginState) {
+                    Toast.makeText(context, MSG_LOGIN_FAILED, Toast.LENGTH_SHORT).show()
+                }
             }
 
             else -> {
@@ -251,7 +255,10 @@ class LoginScreen(
             }
         } else {
             Log.d(TAG, "ViewModelObserver: WRONG ROLES")
-            Toast.makeText(context, MSG_LOGIN_FAILED, Toast.LENGTH_SHORT).show()
+
+            LaunchedEffect(loginData) {
+                Toast.makeText(context, MSG_LOGIN_FAILED, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

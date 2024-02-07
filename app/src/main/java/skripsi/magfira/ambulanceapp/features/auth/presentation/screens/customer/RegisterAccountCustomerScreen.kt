@@ -43,12 +43,13 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import skripsi.magfira.ambulanceapp.features.auth.domain.model.request.RegisterCustomerRequest
-import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.RegisterCustomerViewModel
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBar
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldForm
@@ -68,10 +69,14 @@ import skripsi.magfira.ambulanceapp.util.NetworkUtils.NAME_KEY_PHONE
 import skripsi.magfira.ambulanceapp.util.NetworkUtils.ROLE_CUSTOMER
 
 class RegisterAccountCustomerScreen(
-    private val viewModel: RegisterCustomerViewModel?,
+    private val viewModel: AuthViewModel?,
     private val navController: NavHostController?
 ) {
     private val TAG = "RegisterAccountCustomerScreen"
+
+    // Safe back
+    private val NavHostController.canGoBack : Boolean
+        get() = this.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalComposeUiApi::class)
@@ -111,7 +116,9 @@ class RegisterAccountCustomerScreen(
                 AppBar(
                     title = "Daftar Customer",
                     iconBackClick = {
-                        navController?.popBackStack()
+                        if (navController?.canGoBack == true) {
+                            navController.popBackStack()
+                        }
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -287,7 +294,7 @@ class RegisterAccountCustomerScreen(
 
     @Composable
     fun ViewModelObserver(
-        viewModel: RegisterCustomerViewModel,
+        viewModel: AuthViewModel,
         navController: NavHostController?,
         context: Context,
     ) {
@@ -298,21 +305,25 @@ class RegisterAccountCustomerScreen(
             registerCustomerState.data != null -> {
                 val registerCustomerData = registerCustomerState.data
 
-                LaunchedEffect(registerCustomerData) {
+                LaunchedEffect(registerCustomerState) {
                     navController?.navigate(ScreenRouter.AuthLogin.route) {
                         popUpTo(ScreenRouter.Auth.route) {
                             inclusive = false
                         }
                     }
+
+                    Toast.makeText(context, MSG_SUCCESS_REGISTER, Toast.LENGTH_SHORT).show()
                 }
 
-                Toast.makeText(context, MSG_SUCCESS_REGISTER, Toast.LENGTH_SHORT).show()
             }
 
             registerCustomerState.error.isNotEmpty() -> {
                 val errorMessage = registerCustomerState.error
                 Log.d(TAG, "ViewModelObserver: $errorMessage")
-                Toast.makeText(context, MSG_UNEXPECTED_ERROR, Toast.LENGTH_SHORT).show()
+
+                LaunchedEffect(registerCustomerState) {
+                    Toast.makeText(context, MSG_UNEXPECTED_ERROR, Toast.LENGTH_SHORT).show()
+                }
             }
 
             else -> {

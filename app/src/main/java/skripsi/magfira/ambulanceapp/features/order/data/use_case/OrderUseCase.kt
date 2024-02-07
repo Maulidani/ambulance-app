@@ -4,10 +4,10 @@ import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
-import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.toDriversOn
+import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.toDrivers
 import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.toOrderBooking
 import skripsi.magfira.ambulanceapp.features.order.domain.model.request.OrderRequest
-import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOn
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.Drivers
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.OrderBooking
 import skripsi.magfira.ambulanceapp.features.order.domain.repository.OrderRepository
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_SERVER_ERROR
@@ -21,12 +21,30 @@ class OrderUseCase @Inject constructor(
 ) {
     private val TAG = "OrderUseCase"
 
-    fun driversOn(token: String): Flow<Resource<DriversOn>> = flow {
+    fun driversOn(token: String): Flow<Resource<Drivers>> = flow {
         try {
             // Loading
             emit(Resource.Loading())
             // Request
-            val response = repository.driversOn(token).toDriversOn()
+            val response = repository.driversOn(token).toDrivers()
+            // Success
+            emit(Resource.Success(response))
+            Log.d(TAG, "driversOn: $response")
+        } catch (e: HttpException) {
+            emit(Resource.Error(e.localizedMessage ?: MSG_UNEXPECTED_ERROR))
+            Log.d(TAG, "driversOn: ${e.localizedMessage ?: MSG_UNEXPECTED_ERROR}")
+        } catch (e: IOException) {
+            emit(Resource.Error(MSG_SERVER_ERROR))
+            Log.d(TAG, "driversOn: $MSG_SERVER_ERROR")
+        }
+    }
+
+    fun driversYayasanOn(token: String): Flow<Resource<Drivers>> = flow {
+        try {
+            // Loading
+            emit(Resource.Loading())
+            // Request
+            val response = repository.driversYayasanOn(token).toDrivers()
             // Success
             emit(Resource.Success(response))
             Log.d(TAG, "driversOn: $response")

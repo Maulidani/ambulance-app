@@ -1,7 +1,7 @@
 package skripsi.magfira.ambulanceapp.util
 
 import com.google.android.gms.maps.model.LatLng
-import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOnData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
 import java.lang.Math.atan2
 import java.lang.Math.cos
 import java.lang.Math.sin
@@ -27,10 +27,10 @@ class CalculateLocations {
         return haversine(location1.latitude, location1.longitude, location2.latitude, location2.longitude)
     }
 
-    fun findClosestUser(target: LatLng, users: List<DriversOnData>): DriversOnData? {
+    fun findClosestUser(target: LatLng, users: List<DriversData>): DriversData? {
         if (users.isEmpty()) return null
 
-        var closestUser: DriversOnData? = null
+        var closestUser: DriversData? = null
         var minDistance = Double.MAX_VALUE
 
         for (user in users) {

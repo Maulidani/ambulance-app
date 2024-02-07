@@ -22,14 +22,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBar
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldProfile
 
 class ProfileAccountCustomerScreen(
-    private val viewModel: Any?,
+    private val viewModel: AuthViewModel?,
     private val navController: NavHostController?
 ) {
+
+    // Safe back
+    private val NavHostController.canGoBack: Boolean
+        get() = this.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
+
     @Composable
     fun MainScreen() {
         Column(
@@ -41,7 +48,9 @@ class ProfileAccountCustomerScreen(
             AppBar(
                 title = "Pengaturan",
                 iconBackClick = {
-                    navController?.popBackStack()
+                    if (navController?.canGoBack == true) {
+                        navController.popBackStack()
+                    }
                 }
             )
             Spacer(modifier = Modifier.height(24.dp))

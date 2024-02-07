@@ -33,7 +33,8 @@ import skripsi.magfira.ambulanceapp.features.common.presentation.components.Butt
 
 @Composable
 fun CardEditLocationCustomer(
-    iconBackClick: () -> Unit
+    iconBackClick: () -> Unit,
+    iconSaveLocation: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -84,7 +85,9 @@ fun CardEditLocationCustomer(
                 val iconBack = Icons.Default.ArrowBack
                 Icon(
                     modifier = Modifier
-                        .clickable { iconBackClick() },
+                        .clickable {
+                            iconBackClick()
+                        },
                     imageVector = iconBack,
                     contentDescription = iconBack.toString(),
                     tint = MaterialTheme.colorScheme.onBackground,
@@ -97,7 +100,7 @@ fun CardEditLocationCustomer(
                     ButtonNoIcon(
                         modifier = Modifier,
                         onClick = {
-                            //
+                            iconSaveLocation()
                         },
                         text = "Simpan",
                         textColor = Color.White,

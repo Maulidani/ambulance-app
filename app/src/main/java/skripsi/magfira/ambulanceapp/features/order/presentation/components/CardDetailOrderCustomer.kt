@@ -51,12 +51,6 @@ fun CardDetailOrderCustomer(
     iconBackClick: () -> Unit,
     toOrdering: () -> Unit
 ) {
-    if (requestAllPermissions(context = context)) {
-        viewModel.InitializeLocation(context = context)
-    } else {
-        // Not granted
-        Toast.makeText(context, MessageUtils.MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
-    }
     var myLocation = viewModel.currentLocation
 
     Log.d("MapView", "myLocation: $myLocation")

@@ -4,7 +4,7 @@ import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.Logout
 
 // Data Response
 data class LogoutDto(
-    val success: String,
+    val success: Boolean,
     val message: String,
 )
 
@@ -12,5 +12,6 @@ data class LogoutDto(
 fun LogoutDto.toLogout(): Logout {
     return Logout(
         success = success,
+        message = message,
     )
 }

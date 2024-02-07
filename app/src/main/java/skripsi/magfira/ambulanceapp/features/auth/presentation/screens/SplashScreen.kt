@@ -1,14 +1,5 @@
 package skripsi.magfira.ambulanceapp.features.auth.presentation.screens
 
-import android.Manifest
-import android.app.Activity
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,31 +12,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import skripsi.magfira.ambulanceapp.R
-import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.LoginViewModel
-import skripsi.magfira.ambulanceapp.features.common.presentation.components.LocationPermissionTextProvider
-import skripsi.magfira.ambulanceapp.features.common.presentation.components.PermissionDialog
-import skripsi.magfira.ambulanceapp.features.common.presentation.components.ReadExternalStoragePermissionTextProvider
-import skripsi.magfira.ambulanceapp.features.common.presentation.components.ReadMediaImagePermissionTextProvider
-import skripsi.magfira.ambulanceapp.features.common.presentation.view_models.PermissionViewModel
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
 
 class SplashScreen(
-    private val splashScreenViewModel: LoginViewModel?,
+    private val viewModel: AuthViewModel?,
     private val navController: NavHostController?
 ) {
     @Composable
     fun MainScreen() {
-        val loginState = splashScreenViewModel?.stateLogin
+        val loginState = viewModel?.stateLogin
 
         Surface(
             modifier = Modifier.fillMaxSize(),

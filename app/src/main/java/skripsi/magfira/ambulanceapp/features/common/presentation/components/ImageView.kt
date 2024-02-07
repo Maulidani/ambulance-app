@@ -59,21 +59,23 @@ fun ImageView(
                     .background(color = Color.Gray)
             )
         }
-        val iconEdit = Icons.Default.Edit
-        Box(
-            Modifier
-                .fillMaxHeight()
-                .padding(end = 12.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            Icon(
-                modifier = Modifier
-                    .size(16.dp)
-                    .clickable { iconEditClicked() },
-                imageVector = iconEdit,
-                contentDescription = iconEdit.toString()
-            )
+        if(editable) {
+            val iconEdit = Icons.Default.Edit
+            Box(
+                Modifier
+                    .fillMaxHeight()
+                    .padding(end = 12.dp),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .clickable { iconEditClicked() },
+                    imageVector = iconEdit,
+                    contentDescription = iconEdit.toString()
+                )
 
+            }
         }
     }
 }

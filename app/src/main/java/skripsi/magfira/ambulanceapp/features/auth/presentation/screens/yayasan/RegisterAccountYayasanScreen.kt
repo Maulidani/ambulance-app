@@ -43,12 +43,13 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import skripsi.magfira.ambulanceapp.features.auth.domain.model.request.RegisterYayasanRequest
-import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.RegisterYayasanViewModel
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBar
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldForm
@@ -59,9 +60,13 @@ import skripsi.magfira.ambulanceapp.util.MessageUtils
 import skripsi.magfira.ambulanceapp.util.NetworkUtils
 
 class RegisterAccountYayasanScreen(
-    private val viewModel: RegisterYayasanViewModel?,
+    private val viewModel: AuthViewModel?,
     private val navController: NavHostController?
 ) {
+    // Safe back
+    private val NavHostController.canGoBack : Boolean
+        get() = this.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
+
     private val TAG = "RegisterAccountYayasanScreen"
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -103,7 +108,9 @@ class RegisterAccountYayasanScreen(
                 AppBar(
                     title = "Daftar Yayasan",
                     iconBackClick = {
-                        navController?.popBackStack()
+                        if (navController?.canGoBack == true) {
+                            navController.popBackStack()
+                        }
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -283,7 +290,7 @@ class RegisterAccountYayasanScreen(
 
     @Composable
     fun ViewModelObserver(
-        viewModel: RegisterYayasanViewModel,
+        viewModel: AuthViewModel,
         navController: NavHostController?,
         context: Context,
     ) {
@@ -294,22 +301,25 @@ class RegisterAccountYayasanScreen(
             registerYayasanState.data != null -> {
                 val registerYayasanData = registerYayasanState.data
 
-                LaunchedEffect(registerYayasanData) {
+                LaunchedEffect(registerYayasanState) {
                     navController?.navigate(ScreenRouter.AuthLogin.route) {
                         popUpTo(ScreenRouter.Auth.route) {
                             inclusive = false
                         }
                     }
+
+                    Toast.makeText(context, MessageUtils.MSG_SUCCESS_REGISTER, Toast.LENGTH_SHORT).show()
                 }
 
-                Toast.makeText(context, MessageUtils.MSG_SUCCESS_REGISTER, Toast.LENGTH_SHORT).show()
             }
 
             registerYayasanState.error.isNotEmpty() -> {
                 val errorMessage = registerYayasanState.error
                 Log.d(TAG, "ViewModelObserver: $errorMessage")
-                Toast.makeText(context, MessageUtils.MSG_UNEXPECTED_ERROR, Toast.LENGTH_SHORT)
-                    .show()
+
+                LaunchedEffect(registerYayasanState) {
+                    Toast.makeText(context, MessageUtils.MSG_UNEXPECTED_ERROR, Toast.LENGTH_SHORT).show()
+                }
             }
 
             else -> {

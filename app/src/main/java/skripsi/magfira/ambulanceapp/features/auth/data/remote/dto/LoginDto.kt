@@ -5,7 +5,7 @@ import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.LoginDat
 
 // Data Response
 data class LoginDto(
-    val success: String,
+    val success: Boolean,
     val message: String,
     val user: LoginDataDto,
     val token: String

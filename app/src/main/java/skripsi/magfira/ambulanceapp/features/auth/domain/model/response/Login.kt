@@ -1,7 +1,7 @@
 package skripsi.magfira.ambulanceapp.features.auth.domain.model.response
 
 data class Login(
-    val success: String,
+    val success: Boolean,
     val message: String,
     val user: LoginData,
     val token: String

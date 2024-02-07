@@ -1,6 +1,9 @@
 package skripsi.magfira.ambulanceapp.features.auth.presentation.screens.customer
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,9 +22,10 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -41,26 +45,42 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.ShowUser
+import skripsi.magfira.ambulanceapp.features.auth.presentation.components.MyModal
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBar
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ImageView
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldProfile
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_COOMING_SOON
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_LOGOUT_CONFIRM
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_SERVER_ERROR
+import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_SUCCESS_UPDATE_PROFILE
+import skripsi.magfira.ambulanceapp.util.NetworkUtils.BASE_URL_FILE
 import skripsi.magfira.ambulanceapp.util.requestStoragePermissions
 import javax.inject.Inject
 
 class ProfileCustomerScreen(
-    private val viewModel: Any?,
+    private val viewModel: AuthViewModel?,
     private val navController: NavHostController?
 ) {
+    private val TAG = "ProfileCustomerScreen"
+
+    // Safe back
+    private val NavHostController.canGoBack: Boolean
+        get() = this.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
 
     @Inject
     lateinit var dataStorePreferences: DataStorePreferences
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     fun MainScreen() {
@@ -71,6 +91,118 @@ class ProfileCustomerScreen(
 
         val scope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
+
+        var dataProfile by remember { mutableStateOf<ShowUser?>(null) }
+        var name by remember { mutableStateOf("") }
+        var email by remember { mutableStateOf("") }
+        var phone by remember { mutableStateOf("") }
+        var address by remember { mutableStateOf("") }
+        var photo by remember { mutableStateOf("") }
+        var field by remember { mutableStateOf("") }
+
+        LaunchedEffect(dataProfile ?: true) {
+            if (dataStorePreferences.getUserIsLogin.first() == false) {
+                navController?.navigate(ScreenRouter.Customer.route) {
+                    popUpTo(ScreenRouter.Auth.route) {
+                        inclusive = false
+                    }
+                }
+            } else {
+                Log.d(TAG, "dataStore: Token: ${dataStorePreferences.getUserToken.first()!!}")
+                Log.d(TAG, "dataStore: userID: ${dataStorePreferences.getUserId.first()!!}")
+
+                // Add token to viewmodel
+                viewModel?.token = dataStorePreferences.getUserToken.first()!!
+                viewModel?.userId = dataStorePreferences.getUserId.first()!!
+
+                // Get data profile
+                viewModel?.getProfile()
+
+                // Assign data to variable
+                photo = "${BASE_URL_FILE}${dataProfile?.data?.foto_profil}"
+                name = dataProfile?.data?.name ?: "-"
+                email = dataProfile?.data?.email ?: "-"
+                phone = dataProfile?.data?.no_telp ?: "-"
+                address = dataProfile?.data?.alamat ?: "-"
+
+            }
+        }
+
+        // Modal for name
+        var isModalNameOpen by remember { mutableStateOf(false) }
+        BottomSheetScaffold(
+            sheetContent = {
+                if (viewModel != null) {
+                    MyModal(
+                        viewModel,
+                        context,
+                        field,
+                        name,
+                        { name = it },
+                        Icons.Default.Person,
+                        isModalNameOpen,
+                        { isModalNameOpen = false }
+                    )
+                }
+            },
+        ) {}
+
+        // Modal for email
+        var isModalEmailOpen by remember { mutableStateOf(false) }
+        BottomSheetScaffold(
+            sheetContent = {
+                if (viewModel != null) {
+                    MyModal(
+                        viewModel,
+                        context,
+                        field,
+                        email,
+                        { email = it },
+                        Icons.Default.Email,
+                        isModalEmailOpen,
+                        { isModalEmailOpen = false }
+                    )
+                }
+            },
+        ) {}
+
+        // Modal for phone
+        var isModalPhoneOpen by remember { mutableStateOf(false) }
+        BottomSheetScaffold(
+            sheetContent = {
+                if (viewModel != null) {
+                    MyModal(
+                        viewModel,
+                        context,
+                        field,
+                        phone,
+                        { phone = it },
+                        Icons.Default.Phone,
+                        isModalPhoneOpen,
+                        { isModalPhoneOpen = false }
+                    )
+                }
+            },
+        ) {}
+
+        // Modal for address
+        var isModalAddressOpen by remember { mutableStateOf(false) }
+        BottomSheetScaffold(
+            sheetContent = {
+                if (viewModel != null) {
+                    MyModal(
+                        viewModel,
+                        context,
+                        field,
+                        address,
+                        { address = it },
+                        Icons.Default.LocationOn,
+                        isModalAddressOpen,
+                        { isModalAddressOpen = false }
+                    )
+                }
+            },
+        ) {}
 
         Scaffold(
             snackbarHost = {
@@ -86,7 +218,9 @@ class ProfileCustomerScreen(
                 AppBar(
                     title = "Pengaturan",
                     iconBackClick = {
-                        navController?.popBackStack()
+                        if (navController?.canGoBack == true) {
+                            navController.popBackStack()
+                        }
                     }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -94,12 +228,6 @@ class ProfileCustomerScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    var photo by remember { mutableStateOf("") }
-                    var name by remember { mutableStateOf("Name") }
-                    var email by remember { mutableStateOf("Email") }
-                    var phone by remember { mutableStateOf("Phone") }
-                    var address by remember { mutableStateOf("Address") }
-
                     Text(
                         modifier = Modifier,
                         style = MaterialTheme.typography.titleLarge,
@@ -119,7 +247,13 @@ class ProfileCustomerScreen(
                                 //
                             },
                             iconEditClicked = {
-                                //
+                                scope.launch {
+                                    snackbarHostState
+                                        .showSnackbar(
+                                            message = "Cannot edit photo, $MSG_COOMING_SOON",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                }
                             }
                         )
                         Spacer(modifier = Modifier.width(16.dp))
@@ -128,7 +262,8 @@ class ProfileCustomerScreen(
                             icon = Icons.Default.Person,
                             iconEnd = Icons.Default.Edit,
                             iconEndClicked = {
-                                //
+                                field = "name"
+                                isModalNameOpen = true
                             }
                         )
                     }
@@ -138,7 +273,8 @@ class ProfileCustomerScreen(
                         icon = Icons.Default.Email,
                         iconEnd = Icons.Default.Edit,
                         iconEndClicked = {
-                            //
+                            field = "email"
+                            isModalEmailOpen = true
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -147,7 +283,8 @@ class ProfileCustomerScreen(
                         icon = Icons.Default.Phone,
                         iconEnd = Icons.Default.Edit,
                         iconEndClicked = {
-                            //
+                            field = "no_telp"
+                            isModalPhoneOpen = true
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -156,7 +293,8 @@ class ProfileCustomerScreen(
                         icon = Icons.Default.LocationOn,
                         iconEnd = Icons.Default.Edit,
                         iconEndClicked = {
-                            //
+                            field = "alamat"
+                            isModalAddressOpen = true
                         }
                     )
                     Spacer(modifier = Modifier.height(24.dp))
@@ -173,7 +311,14 @@ class ProfileCustomerScreen(
                         icon = Icons.Default.Person,
                         iconEnd = Icons.Default.ArrowForwardIos,
                         iconEndClicked = {
-                            navController?.navigate(ScreenRouter.CustomerAccount.route)
+//                            navController?.navigate(ScreenRouter.CustomerAccount.route)
+                            scope.launch {
+                                snackbarHostState
+                                    .showSnackbar(
+                                        message = "Cannot edit account, $MSG_COOMING_SOON",
+                                        duration = SnackbarDuration.Short
+                                    )
+                            }
                         }
                     )
                     Spacer(modifier = Modifier.height(24.dp))
@@ -228,7 +373,109 @@ class ProfileCustomerScreen(
                 }
             }
         }
+
+        // Observe ViewModel
+        viewModel?.let {
+            ViewModelObserver(
+                it,
+                context,
+                scope,
+                snackbarHostState,
+                onDataProfileReceived = { profile ->
+                    dataProfile = profile
+                }
+            )
+        }
+
     }
+
+    @Composable
+    fun ViewModelObserver(
+        viewModel: AuthViewModel,
+        context: Context,
+        scope: CoroutineScope,
+        snackbarHostState: SnackbarHostState,
+        onDataProfileReceived: (ShowUser) -> Unit
+    ) {
+        // Data update profile
+        val updateProfileState = viewModel.stateUpdateProfile
+
+        // Data get profile
+        val getProfileState = viewModel.stateGetProfile
+
+        when {
+            updateProfileState.isLoading -> {
+
+            }
+
+            updateProfileState.data != null -> {
+                val updateData = updateProfileState.data
+                Log.d(TAG, "ViewModelObserver: $updateData")
+
+                LaunchedEffect(updateData) {
+                    Toast.makeText(context, MSG_SUCCESS_UPDATE_PROFILE, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            updateProfileState.error.isNotEmpty() -> {
+                val errorMessage = updateProfileState.error
+                Log.d(TAG, "ViewModelObserver: $errorMessage")
+
+                LaunchedEffect(errorMessage) {
+                    scope.launch {
+                        snackbarHostState
+                            .showSnackbar(
+                                message = MSG_SERVER_ERROR,
+                                duration = SnackbarDuration.Short
+                            )
+                    }
+                }
+
+            }
+
+            else -> {
+                // Initial state or other cases
+            }
+        }
+
+        when {
+            getProfileState.isLoading -> {
+
+            }
+
+            getProfileState.data != null -> {
+                var getDataProfile = getProfileState.data
+                Log.d(TAG, "ViewModelObserver: $getDataProfile")
+
+                LaunchedEffect(getDataProfile) {
+                    getDataProfile?.let {
+                        onDataProfileReceived(it) // Call the callback with received profile data
+                    }
+                }
+            }
+
+            getProfileState.error.isNotEmpty() -> {
+                val errorMessage = getProfileState.error
+                Log.d(TAG, "ViewModelObserver: $errorMessage")
+
+                LaunchedEffect(errorMessage) {
+                    scope.launch {
+                        snackbarHostState
+                            .showSnackbar(
+                                message = MSG_SERVER_ERROR,
+                                duration = SnackbarDuration.Short
+                            )
+                    }
+                }
+
+            }
+
+            else -> {
+                // Initial state or other cases
+            }
+        }
+    }
+
 }
 
 @Preview(showBackground = true)

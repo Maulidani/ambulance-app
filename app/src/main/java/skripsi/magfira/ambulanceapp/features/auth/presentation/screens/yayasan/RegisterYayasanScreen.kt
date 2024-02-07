@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,8 +35,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
-import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.RegisterYayasanViewModel
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBar
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.FileUpload
@@ -45,7 +45,6 @@ import skripsi.magfira.ambulanceapp.features.common.presentation.components.Text
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
 import skripsi.magfira.ambulanceapp.util.InputValidation
 import skripsi.magfira.ambulanceapp.util.InputValidation.containsNoSpaces
-import skripsi.magfira.ambulanceapp.util.MessageUtils
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_INPUT_CONTAIN_SPACE
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_INPUT_INVALID_EMAIL
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_INPUT_INVALID_PHONE
@@ -54,9 +53,13 @@ import skripsi.magfira.ambulanceapp.util.MimeFileType.FILE_TYPE_SURAT_IZIN_YAYAS
 import skripsi.magfira.ambulanceapp.util.requestStoragePermissions
 
 class RegisterYayasanScreen(
-    private val viewModel: RegisterYayasanViewModel?,
+    private val viewModel: AuthViewModel?,
     private val navController: NavHostController?
 ) {
+    // Safe back
+    private val NavHostController.canGoBack : Boolean
+        get() = this.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
+
     @Composable
     fun MainScreen() {
         val context = LocalContext.current
@@ -88,7 +91,9 @@ class RegisterYayasanScreen(
             AppBar(
                 title = "Daftar Yayasan",
                 iconBackClick = {
-                    navController?.popBackStack()
+                    if (navController?.canGoBack == true) {
+                        navController.popBackStack()
+                    }
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))

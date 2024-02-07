@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 fun TextFieldProfile(
     value: String,
     icon: ImageVector,
-    iconEnd: ImageVector,
+    iconEnd: ImageVector?,
     iconEndClicked: () -> Unit
 ) {
     Surface(
@@ -41,10 +41,12 @@ fun TextFieldProfile(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge
             )
-            Icon(
-                modifier = Modifier.clickable { iconEndClicked() },
-                imageVector = iconEnd, contentDescription = iconEnd.toString()
-            )
+            iconEnd?.let {
+                Icon(
+                    modifier = Modifier.clickable { iconEndClicked() },
+                    imageVector = it, contentDescription = iconEnd.toString()
+                )
+            }
         }
     }
 }

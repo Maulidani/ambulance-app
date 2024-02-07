@@ -16,32 +16,35 @@ private val TAG = "LocationService"
 private lateinit var locationProvider: FusedLocationProviderClient
 private lateinit var locationCallback: LocationCallback
 
+@SuppressLint("MissingPermission")
 @Composable
 fun LocationProvider(context: Context, onLocationResult: (LatLng) -> Unit) {
-    locationProvider = LocationServices.getFusedLocationProviderClient(context)
+    if (!::locationProvider.isInitialized) {
+        locationProvider = LocationServices.getFusedLocationProviderClient(context)
 
-    // Declare latlng here to store the latest location
-    var latlng by remember { mutableStateOf(LatLng(0.0, 0.0)) }
+        // Declare latlng here to store the latest location
+        var latlng by remember { mutableStateOf(LatLng(0.0, 0.0)) }
 
-    locationCallback = object : LocationCallback() {
-        override fun onLocationResult(result: LocationResult) {
-            for (location in result.locations) {
-                latlng = LatLng(location.latitude, location.longitude)
-                onLocationResult(latlng)
-                Log.d(TAG, "${location.latitude},${location.longitude}")
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                for (location in result.locations) {
+                    latlng = LatLng(location.latitude, location.longitude)
+                    onLocationResult(latlng)
+
+                    Log.d(TAG, "${location.latitude},${location.longitude}")
+                }
             }
         }
     }
 
-    locationUpdate()
 }
 
 @SuppressLint("MissingPermission")
 fun locationUpdate() {
-    val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 60000)
-        .setMinUpdateIntervalMillis(10000)
-        .setIntervalMillis(30000)
-        .setMaxUpdateDelayMillis(120000)
+    val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 7000)
+        .setMinUpdateIntervalMillis(5000)
+        .setIntervalMillis(7000)
+        .setMaxUpdateDelayMillis(10000)
         .build()
 
     locationProvider.requestLocationUpdates(
@@ -49,17 +52,23 @@ fun locationUpdate() {
         locationCallback,
         Looper.getMainLooper()
     )
+
 }
 
 fun stopLocationUpdate() {
     try {
         //Removes all location updates for the given callback.
-        val removeTask = locationProvider.removeLocationUpdates(locationCallback)
-        removeTask.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Log.d(TAG, "Location Callback removed.")
-            } else {
-                Log.d(TAG, "Failed to remove Location Callback.")
+        Log.d(TAG, "stopLocationUpdate() called")
+        if (::locationProvider.isInitialized && ::locationCallback.isInitialized) {
+            Log.d(TAG, "Removing location updates")
+
+            val removeTask = locationProvider.removeLocationUpdates(locationCallback)
+            removeTask.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "Location Callback removed.")
+                } else {
+                    Log.d(TAG, "Failed to remove Location Callback.")
+                }
             }
         }
     } catch (se: SecurityException) {

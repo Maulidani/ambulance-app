@@ -28,7 +28,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import skripsi.magfira.ambulanceapp.features.auth.domain.model.request.LoginRequest
-import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.LoginViewModel
+import skripsi.magfira.ambulanceapp.features.auth.presentation.view_models.AuthViewModel
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldForm
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldPasswordForm
@@ -38,7 +38,7 @@ import skripsi.magfira.ambulanceapp.util.MessageUtils
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DriverScreen(
-    viewModel: LoginViewModel?,
+    viewModel: AuthViewModel?,
     navController: NavHostController?,
     context: Context,
 ) {

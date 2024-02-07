@@ -11,7 +11,7 @@ data class OrderRequestData(
     val driver_id: String,
     val nama: String,
     val lokasi_jemput: String,
-    val detail_pesanan: String,
+    val detail_pesanan: String?,
     val updated_at: String,
     val created_at: String,
 )

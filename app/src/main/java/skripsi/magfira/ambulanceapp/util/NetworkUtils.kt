@@ -11,6 +11,7 @@ object NetworkUtils {
     const val APP_CLUSTER = "ap1"
 
     // Name Key api/route query
+    const val NAME_KEY_ID = "id"
     const val NAME_KEY_NAME = "name"
     const val NAME_KEY_EMAIL = "email"
     const val NAME_KEY_PHONE = "phone"

@@ -18,6 +18,7 @@ import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.Orde
 import skripsi.magfira.ambulanceapp.util.LocationProvider
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_UNEXPECTED_ERROR
 import skripsi.magfira.ambulanceapp.util.Resource
+import skripsi.magfira.ambulanceapp.util.stopLocationUpdate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,8 +30,6 @@ class OrderViewModel @Inject constructor(
 
     var currentLocation by mutableStateOf(LatLng(0.0, 0.0))
         private set
-    var currentLocationInitialized by mutableStateOf(false)
-        private set
     var editableMyLocation by mutableStateOf(false)
         private set
 
@@ -38,16 +37,20 @@ class OrderViewModel @Inject constructor(
     fun InitializeLocation(context: Context) {
         LocationProvider(context) {
             currentLocation = LatLng(it.latitude, it.longitude)
-            currentLocationInitialized = true
+            stopLocationUpdate() // Stop when get data
         }
     }
     fun editableLocation(isEditable: Boolean) {
         editableMyLocation = isEditable
     }
+    fun updateMyLocation(latLng: LatLng) {
+        currentLocation = latLng
+    }
 
     var stateDriversOn by mutableStateOf(DriversOnState())
         private set
-
+    var stateDriversYayasanOn by mutableStateOf(DriversOnState())
+        private set
     var stateOrderBooking by mutableStateOf(OrderBookingState())
         private set
 
@@ -68,6 +71,30 @@ class OrderViewModel @Inject constructor(
 
                 is Resource.Error -> {
                     stateDriversOn = DriversOnState(
+                        error = result.message ?: MSG_UNEXPECTED_ERROR
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun driversYayasanOn() {
+        orderUseCase.driversYayasanOn("Bearer $token").onEach { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    stateDriversYayasanOn = DriversOnState(
+                        isLoading = true
+                    )
+                }
+
+                is Resource.Success -> {
+                    stateDriversYayasanOn = DriversOnState(
+                        data = result.data
+                    )
+                }
+
+                is Resource.Error -> {
+                    stateDriversYayasanOn = DriversOnState(
                         error = result.message ?: MSG_UNEXPECTED_ERROR
                     )
                 }

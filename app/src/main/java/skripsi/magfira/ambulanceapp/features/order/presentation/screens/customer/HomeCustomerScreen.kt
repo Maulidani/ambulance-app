@@ -26,8 +26,8 @@ import com.pusher.client.connection.ConnectionStateChange
 import kotlinx.coroutines.flow.first
 import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBarHome
-import skripsi.magfira.ambulanceapp.features.common.presentation.components.MapView
-import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOnData
+import skripsi.magfira.ambulanceapp.features.order.presentation.components.MapViewCustomer
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardDetailOrderCustomer
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardEditLocationCustomer
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardMainCustomer
@@ -49,6 +49,8 @@ class HomeCustomerScreen(
     private val TAG = "HomeCustomerScreen"
     private val ORDERING_FLOW = listOf("Main", "Change Location", "Detail", "Ordering")
 
+    private var isLocationServiceInitialized = false
+
     @Inject
     lateinit var dataStorePreferences: DataStorePreferences
 
@@ -61,25 +63,29 @@ class HomeCustomerScreen(
 
         dataStorePreferences = DataStorePreferences(context)
 
+        var orderingStack by rememberSaveable { mutableStateOf(listOf(ORDERING_FLOW[0])) }
+        var driversOn by remember { mutableStateOf(listOf<DriversData>()) }
+        var isOrderAccepted by remember { mutableStateOf(false) }
+
         if (requestAllPermissions(context = context)) {
-            // Initialize location
-            if (!viewModel.currentLocationInitialized) {
+            if (!isLocationServiceInitialized) {
                 viewModel.InitializeLocation(context = context)
+                locationUpdate()
+
+                isLocationServiceInitialized = true
+            } else {
+                stopLocationUpdate()
             }
         } else {
             // Not granted
             Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
         }
 
-        var orderingStack by rememberSaveable { mutableStateOf(listOf(ORDERING_FLOW[0])) }
-        var driversOn by remember { mutableStateOf(listOf<DriversOnData>()) }
-        var isOrderAccepted by remember { mutableStateOf(false) }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            MapView(
+            MapViewCustomer(
                 viewModel = viewModel,
                 driversOnData = driversOn,
                 isOrderAccepted = isOrderAccepted,
@@ -105,9 +111,6 @@ class HomeCustomerScreen(
                 when (orderingStack.lastOrNull()) {
                     ORDERING_FLOW[0] -> {
                         if (requestAllPermissions(context = context)) {
-                            if (!viewModel.currentLocationInitialized) {
-                                locationUpdate()
-                            }
                             viewModel.editableLocation(false)
                         } else {
                             // Not granted
@@ -134,7 +137,6 @@ class HomeCustomerScreen(
 
                     ORDERING_FLOW[1] -> {
                         if (requestAllPermissions(context = context)) {
-                            stopLocationUpdate()
                             viewModel.editableLocation(true)
                         } else {
                             // Not granted
@@ -142,6 +144,11 @@ class HomeCustomerScreen(
                         }
                         CardEditLocationCustomer(
                             iconBackClick = {
+                                locationUpdate() // Update location
+                                orderingStack = orderingStack.dropLast(1) + ORDERING_FLOW[0]
+                            },
+                            iconSaveLocation = {
+                                stopLocationUpdate() // Stop location
                                 orderingStack = orderingStack.dropLast(1) + ORDERING_FLOW[0]
                             },
                         )
@@ -149,7 +156,6 @@ class HomeCustomerScreen(
 
                     ORDERING_FLOW[2] -> {
                         if (requestAllPermissions(context = context)) {
-                            stopLocationUpdate()
                             viewModel.editableLocation(false)
                         } else {
                             // Not granted
@@ -170,7 +176,6 @@ class HomeCustomerScreen(
 
                     ORDERING_FLOW[3] -> {
                         if (requestAllPermissions(context = context)) {
-                            stopLocationUpdate()
                             viewModel.editableLocation(false)
                         } else {
                             // Not granted
@@ -196,8 +201,8 @@ class HomeCustomerScreen(
 
         // Check Login
         LaunchedEffect(true) {
-            val isLogin = dataStorePreferences.getIsLogin.first()
-            val token = dataStorePreferences.getToken.first()
+            val isLogin = dataStorePreferences.getUserIsLogin.first()
+            val token = dataStorePreferences.getUserToken.first()
 
             if (isLogin == true) {
                 viewModel.token = token ?: ""
@@ -254,7 +259,7 @@ class HomeCustomerScreen(
     @Composable
     fun ViewModelObserver(
         viewModel: OrderViewModel,
-        onDriversUpdated: (List<DriversOnData>) -> Unit,
+        onDriversUpdated: (List<DriversData>) -> Unit,
         context: Context,
     ) {
         val driversOnState = viewModel.stateDriversOn
@@ -278,6 +283,7 @@ class HomeCustomerScreen(
         }
 
     }
+
 }
 
 //@Preview(showBackground = true)

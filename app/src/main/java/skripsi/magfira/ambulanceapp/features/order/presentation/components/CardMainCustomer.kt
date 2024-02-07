@@ -30,11 +30,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import skripsi.magfira.ambulanceapp.R
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
-import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOnData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
 
 @Composable
 fun CardMainCustomer(
-    driversOnData: List<DriversOnData>,
+    driversOnData: List<DriversData>,
     toEditLocation: () -> Unit,
     toOrderDetail: () -> Unit
 ) {

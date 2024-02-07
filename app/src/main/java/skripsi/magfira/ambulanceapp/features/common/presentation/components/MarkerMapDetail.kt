@@ -27,12 +27,12 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import skripsi.magfira.ambulanceapp.R
-import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversOnData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
 import skripsi.magfira.ambulanceapp.util.NetworkUtils.BASE_URL_FILE
 
 @Composable
 fun MarkerMapDetail(
-    driverOnData: DriversOnData
+    driverOnData: DriversData
 ) {
     Surface(
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
@@ -71,7 +71,6 @@ fun MarkerMapDetail(
 
                 val nameDriver = driverOnData.name
                 val phoneDriver = driverOnData.no_telp
-                val nameYayasanDriver = driverOnData.yayasan.name
                 val photoDriver = BASE_URL_FILE + driverOnData.foto_profil
 
                 Surface(

@@ -19,21 +19,27 @@ class DataStorePreferences @Inject constructor(@ApplicationContext private val c
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("Settings")
         val USER_IS_LOGIN_KEY = booleanPreferencesKey("user_is_login")
         val USER_TOKEN_KEY = stringPreferencesKey("user_token")
+        val USER_ID = stringPreferencesKey("user_id")
         val USER_ROLE_KEY = stringPreferencesKey("user_role")
         // Add other keys as needed
     }
 
-    val getIsLogin: Flow<Boolean?> = context.dataStore.data
+    val getUserIsLogin: Flow<Boolean?> = context.dataStore.data
         .map { preferences ->
             preferences[USER_IS_LOGIN_KEY]
         }
 
-    val getToken: Flow<String?> = context.dataStore.data
+    val getUserToken: Flow<String?> = context.dataStore.data
         .map { preferences ->
             preferences[USER_TOKEN_KEY] ?: ""
         }
 
-    val getRole: Flow<String?> = context.dataStore.data
+    val getUserId: Flow<String?> = context.dataStore.data
+        .map { preferences ->
+            preferences[USER_ID] ?: ""
+        }
+
+    val getUserRole: Flow<String?> = context.dataStore.data
         .map { preferences ->
             preferences[USER_ROLE_KEY] ?: ""
         }
@@ -53,6 +59,13 @@ class DataStorePreferences @Inject constructor(@ApplicationContext private val c
     suspend fun saveToken(token: String) {
         context.dataStore.edit { preferences ->
             preferences[USER_TOKEN_KEY] = token
+        }
+    }
+
+
+    suspend fun saveUserId(userId: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_ID] = userId
         }
     }
 
