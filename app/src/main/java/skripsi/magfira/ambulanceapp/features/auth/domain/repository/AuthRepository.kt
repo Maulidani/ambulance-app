@@ -4,6 +4,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.DeleteUserDto
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.LoginDto
+import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.LogoutDto
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.RegisterCustomerDto
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.RegisterYayasanDto
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.ShowUserDto
@@ -14,6 +15,8 @@ import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.DriversDto
 interface AuthRepository {
 
     suspend fun login(request: LoginRequest): LoginDto
+
+    suspend fun logout(logout: String): LogoutDto
 
     suspend fun deleteUser(
         token: String,

@@ -18,6 +18,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import skripsi.magfira.ambulanceapp.R
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.MarkerMapDetail
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.BookingData
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
 import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
 import skripsi.magfira.ambulanceapp.util.getReadableLocation
@@ -27,19 +28,36 @@ import skripsi.magfira.ambulanceapp.util.stopLocationUpdate
 fun MapViewCustomer(
     viewModel: OrderViewModel,
     driversOnData: List<DriversData>,
-    isOrderAccepted: Boolean,
+    bookingData: List<BookingData>?,
     context: Context
 ) {
     val TAG = "MapViewCustomer"
 
-    // In ordering state
-    if (isOrderAccepted) {
-        stopLocationUpdate()
-    }
-
     Log.d(TAG, "myLocation editable: ${viewModel.editableMyLocation}")
     Log.d(TAG, "myLocation: ${viewModel.currentLocation}")
-    Log.d(TAG, "myLocation : ${getReadableLocation(viewModel.currentLocation.latitude, viewModel.currentLocation.longitude, context)}")
+    Log.d(
+        TAG,
+        "myLocation : ${
+            getReadableLocation(
+                viewModel.currentLocation.latitude,
+                viewModel.currentLocation.longitude,
+                context
+            )
+        }"
+    )
+
+    val ORDERING_FLOW = listOf("dalam proses", "diterima")
+
+    var isOrderAccepted = false
+    if (bookingData != null) {
+        if (bookingData.isNotEmpty()) {
+            if (bookingData?.get(0)?.status_boking == ORDERING_FLOW[1]) {
+                isOrderAccepted = true
+            } else {
+                isOrderAccepted = false
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -72,19 +90,39 @@ fun MapViewCustomer(
                 icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_my_location),
             )
 
-            // Drivers location
-            driversOnData.forEach { data ->
+            // In ordering state
+            if (isOrderAccepted) {
+                stopLocationUpdate()
+
                 MarkerInfoWindowContent(
                     state = MarkerState(
                         position = LatLng(
-                            data.lat?.toDoubleOrNull() ?: 0.0,
-                            data.long?.toDoubleOrNull() ?: 0.0
+                            bookingData?.get(0)?.driver?.lat ?: 0.0,
+                            bookingData?.get(0)?.driver?.long ?: 0.0
                         )
                     ),
                     title = "Driver",
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_ambulance_location),
                 ) {
-                    MarkerMapDetail(data)
+//                    val data = bookingData?.driver
+//                    MarkerMapDetail(driverOnData = data)
+                }
+
+            } else {
+                // Drivers location
+                driversOnData.forEach { data ->
+                    MarkerInfoWindowContent(
+                        state = MarkerState(
+                            position = LatLng(
+                                data.lat?.toDoubleOrNull() ?: 0.0,
+                                data.long?.toDoubleOrNull() ?: 0.0
+                            )
+                        ),
+                        title = "Driver",
+                        icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_ambulance_location),
+                    ) {
+                        MarkerMapDetail(driverOnData = data)
+                    }
                 }
             }
         }

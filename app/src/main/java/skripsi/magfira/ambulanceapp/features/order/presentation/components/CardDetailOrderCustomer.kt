@@ -38,26 +38,42 @@ import androidx.compose.ui.unit.dp
 import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonIcon
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.TextFieldOutlinedForm
+import skripsi.magfira.ambulanceapp.features.order.domain.model.request.OrderRequest
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
 import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
+import skripsi.magfira.ambulanceapp.util.CalculateLocations
 import skripsi.magfira.ambulanceapp.util.MessageUtils
 import skripsi.magfira.ambulanceapp.util.getReadableLocation
-import skripsi.magfira.ambulanceapp.util.requestAllPermissions
 
 @Composable
 fun CardDetailOrderCustomer(
     viewModel: OrderViewModel,
     dataStorePreferences: DataStorePreferences,
     context: Context,
+    driversOn: List<DriversData>,
     iconBackClick: () -> Unit,
     toOrdering: () -> Unit
 ) {
     var myLocation = viewModel.currentLocation
+    var closestDriverAmbulanData = CalculateLocations
+        .findClosestUser( myLocation, driversOn)
 
     Log.d("MapView", "myLocation: $myLocation")
-    Log.d("MapView", "myLocation : ${getReadableLocation(myLocation.latitude, myLocation.longitude, context)}")
+    Log.d(
+        "MapView",
+        "myLocation : ${getReadableLocation(myLocation.latitude, myLocation.longitude, context)}"
+    )
 
     var orderName by rememberSaveable { mutableStateOf("") }
-    var orderLocation by rememberSaveable { mutableStateOf(getReadableLocation(myLocation.latitude, myLocation.longitude, context)) }
+    var orderLocation by rememberSaveable {
+        mutableStateOf(
+            getReadableLocation(
+                myLocation.latitude,
+                myLocation.longitude,
+                context
+            )
+        )
+    }
     var orderDetailLocation by rememberSaveable { mutableStateOf("") }
 
     Surface(
@@ -124,10 +140,22 @@ fun CardDetailOrderCustomer(
                         onClick = {
                             if (orderName.isEmpty() ||
                                 orderLocation.isEmpty() ||
-                                orderDetailLocation.isEmpty()) {
-                                Toast.makeText(context, MessageUtils.MSG_REQUIRED_FIELDS, Toast.LENGTH_SHORT).show()
+                                orderDetailLocation.isEmpty() ||
+                                closestDriverAmbulanData == null
+                            ) {
+                                Toast.makeText(
+                                    context,
+                                    MessageUtils.MSG_REQUIRED_FIELDS,
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             } else {
-                                toOrdering()
+                                val orderRequest = OrderRequest(
+                                    driver_id = closestDriverAmbulanData.id,
+                                    nama = orderName,
+                                    lokasi_jemput = "${myLocation.latitude}, ${myLocation.longitude}", // LatLng
+                                    detail_pesanan = orderDetailLocation,
+                                )
+                                viewModel.orderBooking(orderRequest)
                             }
                         },
                         icon = Icons.Default.ArrowForwardIos,

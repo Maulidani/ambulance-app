@@ -139,11 +139,6 @@ class ProfileDriverScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    var photo by remember { mutableStateOf("") }
-                    var name by remember { mutableStateOf("Name") }
-                    var email by remember { mutableStateOf("Email") }
-                    var phone by remember { mutableStateOf("Phone") }
-                    var address by remember { mutableStateOf("Address") }
                     Text(
                         modifier = Modifier,
                         style = MaterialTheme.typography.titleLarge,
@@ -255,13 +250,8 @@ class ProfileDriverScreen(
                                         )
                                     when (result) {
                                         SnackbarResult.ActionPerformed -> {
-                                            // Delete login data, then back to Login
-                                            dataStorePreferences.saveLogin(false)
-                                            navController?.navigate(ScreenRouter.Auth.route) {
-                                                popUpTo(ScreenRouter.Customer.route) {
-                                                    inclusive = false
-                                                }
-                                            }
+                                            // Logout
+                                            viewModel?.logout()
                                         }
 
                                         SnackbarResult.Dismissed -> {
@@ -308,6 +298,9 @@ class ProfileDriverScreen(
 
         // Data get profile
         val getProfileState = viewModel.stateGetProfile
+
+        // Data logout
+        val logoutState = viewModel.stateLogout
 
         when {
             updateProfileState.isLoading -> {
@@ -361,6 +354,47 @@ class ProfileDriverScreen(
             }
 
             getProfileState.error.isNotEmpty() -> {
+                val errorMessage = getProfileState.error
+                Log.d(TAG, "ViewModelObserver: $errorMessage")
+
+                LaunchedEffect(errorMessage) {
+                    scope.launch {
+                        snackbarHostState
+                            .showSnackbar(
+                                message = MessageUtils.MSG_SERVER_ERROR,
+                                duration = SnackbarDuration.Short
+                            )
+                    }
+                }
+
+            }
+
+            else -> {
+                // Initial state or other cases
+            }
+        }
+
+        when {
+            logoutState.isLoading -> {
+
+            }
+
+            logoutState.data != null -> {
+                var getDataLogout = logoutState.data
+                Log.d(TAG, "ViewModelObserver: $getDataLogout")
+
+                LaunchedEffect(getDataLogout) {
+                    // Delete login data, then back to Login
+                    dataStorePreferences.saveLogin(false)
+                    navController?.navigate(ScreenRouter.Auth.route) {
+                        popUpTo(ScreenRouter.Driver.route) {
+                            inclusive = false
+                        }
+                    }
+                }
+            }
+
+            logoutState.error.isNotEmpty() -> {
                 val errorMessage = getProfileState.error
                 Log.d(TAG, "ViewModelObserver: $errorMessage")
 

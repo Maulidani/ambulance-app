@@ -99,3 +99,15 @@ fun getReadableLocation(latitude: Double, longitude: Double, context: Context): 
     return addressText
 
 }
+
+fun parseLatLngFromString(locationString: String): LatLng? {
+    val coordinates = locationString.split(", ")
+    if (coordinates.size == 2) {
+        val lat = coordinates[0].toDoubleOrNull()
+        val lng = coordinates[1].toDoubleOrNull()
+        if (lat != null && lng != null) {
+            return LatLng(lat, lng)
+        }
+    }
+    return null
+}

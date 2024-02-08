@@ -41,6 +41,7 @@ fun CardActivationDriver() {
     val statusSwitch = true
     val arrowLeft = Icons.Default.ArrowBackIos
     val arrowRight = Icons.Default.ArrowForwardIos
+
     Surface(
         modifier = Modifier
             .padding(horizontal = 16.dp),
@@ -57,23 +58,28 @@ fun CardActivationDriver() {
             Text(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
-                text = statusText,
+                text ="Akun anda sudah aktif",
             )
-            Spacer(modifier = Modifier.width(12.dp))
-            Switch(
-                checked = statusSwitch,
-                onCheckedChange = {}
-            )
-            Spacer(modifier = Modifier.width(36.dp))
-            Icon(
-                modifier = Modifier
-                    .clickable {
-                        //
-                    },
-                imageVector = arrowRight,
-                contentDescription = arrowRight.toString(),
-                tint = MaterialTheme.colorScheme.onBackground,
-            )
+//            Text(
+//                style = MaterialTheme.typography.titleMedium,
+//                color = MaterialTheme.colorScheme.onBackground,
+//                text = statusText,
+//            )
+//            Spacer(modifier = Modifier.width(12.dp))
+//            Switch(
+//                checked = statusSwitch,
+//                onCheckedChange = {}
+//            )
+//            Spacer(modifier = Modifier.width(36.dp))
+//            Icon(
+//                modifier = Modifier
+//                    .clickable {
+//                        //
+//                    },
+//                imageVector = arrowRight,
+//                contentDescription = arrowRight.toString(),
+//                tint = MaterialTheme.colorScheme.onBackground,
+//            )
         }
     }
 }

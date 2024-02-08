@@ -1,7 +1,6 @@
 package skripsi.magfira.ambulanceapp.features.order.presentation.components
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -26,44 +24,51 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import skripsi.magfira.ambulanceapp.R
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.ButtonNoIcon
+import skripsi.magfira.ambulanceapp.features.common.presentation.components.ImageView
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.BookingData
 import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
-import skripsi.magfira.ambulanceapp.util.MessageUtils
+import skripsi.magfira.ambulanceapp.util.NetworkUtils
+import skripsi.magfira.ambulanceapp.util.getReadableLocation
+import skripsi.magfira.ambulanceapp.util.parseLatLngFromString
 
 @Composable
 fun CardOrderingCustomer(
     viewModel: OrderViewModel,
     context: Context,
-    isOrderAccepted: Boolean,
+    bookingData: BookingData,
     toMainOrder: () -> Unit
 ) {
-    val nameDriver by rememberSaveable { mutableStateOf("driver's name") }
-    val phoneDriver  by rememberSaveable { mutableStateOf("driver's phone") }
-    val nameYayasanDriver  by rememberSaveable { mutableStateOf("driver's yayasan") }
-    val imageDriver by rememberSaveable { mutableStateOf("") }
-    var orderAcceptByDriver by rememberSaveable { mutableStateOf(false) }
+    val ORDERING_FLOW = listOf("dalam proses", "diterima")
 
-    val orderedName by rememberSaveable { mutableStateOf("customer's name") }
-    val orderedLocation by rememberSaveable { mutableStateOf("customer's location") }
-    val orderedDetailLocation by rememberSaveable { mutableStateOf("customer's detail location") }
-    val orderedPhone by rememberSaveable { mutableStateOf("customer's phone") }
+    val notAcceptedYet = "Tunggu driver ambulan menerima pesanan anda"
+    val accepted = "Driver ambulan telah menerima pesanan anda"
+    var orderAcceptByDriver = false
+
+    val locationName = parseLatLngFromString(bookingData.lokasi_jemput)?.let {
+        getReadableLocation(
+            it.latitude,
+            it.longitude, context
+        )
+    }
+
+    if (bookingData.status_boking == ORDERING_FLOW[1]) {
+        orderAcceptByDriver = true
+    } else {
+        orderAcceptByDriver = false
+    }
 
     Surface(
         modifier = Modifier
@@ -96,8 +101,6 @@ fun CardOrderingCustomer(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    val notAcceptedYet = "Tunggu drivre ambulan menerima pesanan anda"
-                    val accepted = "Driver ambulan telah menerima pesanan anda"
 
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -124,17 +127,16 @@ fun CardOrderingCustomer(
                             .width(64.dp),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(context)
-                                .data(imageDriver)
-                                .crossfade(true)
-                                .build(),
-                            placeholder = painterResource(R.drawable.logo_only),
-                            contentDescription = imageDriver,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(color = Color.Gray)
+                        ImageView(
+                            context = context,
+                            source = "${NetworkUtils.BASE_URL_FILE}${bookingData.driver.foto_profil}",
+                            editable = false,
+                            imageClicked = {
+                                //
+                            },
+                            iconEditClicked = {
+                                //
+                            }
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
@@ -143,19 +145,13 @@ fun CardOrderingCustomer(
                             .fillMaxWidth()
                     ) {
                         Text(
-                            text = nameDriver,
+                            text = bookingData.driver.name,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = phoneDriver,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = nameYayasanDriver,
+                            text = bookingData.driver.no_telp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -185,7 +181,7 @@ fun CardOrderingCustomer(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = orderedName
+                            text = bookingData.nama
                         )
                         Icon(
                             modifier = Modifier
@@ -202,11 +198,11 @@ fun CardOrderingCustomer(
                     ) {
                         if (!hide) {
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = orderedPhone)
+                            Text(text = bookingData.customer.no_telp)
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = orderedLocation)
+                            Text(text = locationName ?: "-")
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = orderedDetailLocation)
+                            Text(text = bookingData.detail_pesanan)
                         }
                     }
                 }

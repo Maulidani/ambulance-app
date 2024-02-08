@@ -12,8 +12,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import skripsi.magfira.ambulanceapp.features.order.data.use_case.OrderUseCase
+import skripsi.magfira.ambulanceapp.features.order.domain.model.request.AcceptBookingRequest
 import skripsi.magfira.ambulanceapp.features.order.domain.model.request.OrderRequest
+import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.AcceptBookingState
 import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.DriversOnState
+import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.GetAllBookingState
 import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.OrderBookingState
 import skripsi.magfira.ambulanceapp.util.LocationProvider
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_UNEXPECTED_ERROR
@@ -52,6 +55,12 @@ class OrderViewModel @Inject constructor(
     var stateDriversYayasanOn by mutableStateOf(DriversOnState())
         private set
     var stateOrderBooking by mutableStateOf(OrderBookingState())
+        private set
+    var stateAllBooking by mutableStateOf(GetAllBookingState())
+        private set
+    var stateAcceptBooking by mutableStateOf(AcceptBookingState())
+        private set
+    var stateCancelBooking by mutableStateOf(AcceptBookingState())
         private set
 
     fun driversOn() {
@@ -119,6 +128,78 @@ class OrderViewModel @Inject constructor(
 
                 is Resource.Error -> {
                     stateOrderBooking = OrderBookingState(
+                        error = result.message ?: MSG_UNEXPECTED_ERROR
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun getAllBooking() {
+        orderUseCase.getAllBooking("Bearer $token").onEach { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    stateAllBooking = GetAllBookingState(
+                        isLoading = true
+                    )
+                }
+
+                is Resource.Success -> {
+                    stateAllBooking = GetAllBookingState(
+                        data = result.data
+                    )
+                }
+
+                is Resource.Error -> {
+                    stateAllBooking = GetAllBookingState(
+                        error = result.message ?: MSG_UNEXPECTED_ERROR
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun acceptBooking(bookingId: String, acceptBookingRequest: AcceptBookingRequest) {
+        orderUseCase.acceptBooking("Bearer $token", bookingId, acceptBookingRequest).onEach { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    stateAcceptBooking = AcceptBookingState(
+                        isLoading = true
+                    )
+                }
+
+                is Resource.Success -> {
+                    stateAcceptBooking = AcceptBookingState(
+                        data = result.data
+                    )
+                }
+
+                is Resource.Error -> {
+                    stateAcceptBooking = AcceptBookingState(
+                        error = result.message ?: MSG_UNEXPECTED_ERROR
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun cancelBooking(bookingId: String) {
+        orderUseCase.cancelBooking("Bearer $token", bookingId).onEach { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    stateCancelBooking = AcceptBookingState(
+                        isLoading = true
+                    )
+                }
+
+                is Resource.Success -> {
+                    stateCancelBooking = AcceptBookingState(
+                        data = result.data
+                    )
+                }
+
+                is Resource.Error -> {
+                    stateCancelBooking = AcceptBookingState(
                         error = result.message ?: MSG_UNEXPECTED_ERROR
                     )
                 }

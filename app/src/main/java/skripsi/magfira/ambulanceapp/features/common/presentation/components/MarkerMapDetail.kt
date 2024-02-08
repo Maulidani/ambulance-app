@@ -15,6 +15,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,13 +31,17 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import skripsi.magfira.ambulanceapp.R
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.Customer
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
 import skripsi.magfira.ambulanceapp.util.NetworkUtils.BASE_URL_FILE
 
 @Composable
 fun MarkerMapDetail(
-    driverOnData: DriversData
+    driverOnData: DriversData? = null,
+    customerData: Customer? = null,
 ) {
+    var title by remember { mutableStateOf("Aktif") }
+
     Surface(
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
         color = Color.Transparent
@@ -58,20 +66,67 @@ fun MarkerMapDetail(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Aktif",
+                    text = title,
                     color = Color.Green,
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-            ) {
 
-                val nameDriver = driverOnData.name
-                val phoneDriver = driverOnData.no_telp
-                val photoDriver = BASE_URL_FILE + driverOnData.foto_profil
+            if (driverOnData != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                ) {
+                    val nameDriver = driverOnData.name
+                    val phoneDriver = driverOnData.no_telp
+                    val photoDriver = BASE_URL_FILE + driverOnData.foto_profil
+
+                    Surface(
+                        modifier = Modifier
+                            .height(64.dp)
+                            .width(48.dp),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        val painter = rememberAsyncImagePainter(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(photoDriver)
+                                .size(Size.ORIGINAL)
+                                .allowHardware(false)
+                                .build()
+                        )
+
+                        Image(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Transparent),
+                            painter = painter,
+                            contentDescription = painter.toString(),
+                            contentScale = ContentScale.Fit,
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = nameDriver,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = phoneDriver ?: "-",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+
+            } else if (customerData != null) {
+
+                title = "Customer"
+                val nameCustomer = customerData.name
+                val phoneCustomer = customerData.no_telp
+                val photoCustomer = BASE_URL_FILE + customerData.foto_profil
 
                 Surface(
                     modifier = Modifier
@@ -81,7 +136,7 @@ fun MarkerMapDetail(
                 ) {
                     val painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(photoDriver)
+                            .data(photoCustomer)
                             .size(Size.ORIGINAL)
                             .allowHardware(false)
                             .build()
@@ -99,13 +154,13 @@ fun MarkerMapDetail(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = nameDriver,
+                        text = nameCustomer,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = phoneDriver ?: "-",
+                        text = phoneCustomer,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )

@@ -65,7 +65,7 @@ fun MapViewYayasan(
                     title = "Driver",
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_ambulance_location),
                 ) {
-                    MarkerMapDetail(data)
+                    MarkerMapDetail(driverOnData = data)
                 }
             }
         }

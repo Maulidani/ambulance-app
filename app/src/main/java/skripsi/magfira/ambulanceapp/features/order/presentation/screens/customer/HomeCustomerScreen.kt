@@ -20,12 +20,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.pusher.client.Pusher
+import com.pusher.client.PusherOptions
 import com.pusher.client.connection.ConnectionEventListener
 import com.pusher.client.connection.ConnectionState
 import com.pusher.client.connection.ConnectionStateChange
 import kotlinx.coroutines.flow.first
 import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBarHome
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.AllBooking
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.MapViewCustomer
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardDetailOrderCustomer
@@ -37,7 +39,9 @@ import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_DO_NOT_HAS_LOCATION_PERMISSION
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_NONE_AMBULANCE_ACTIVE
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_UNAUTHORIZED
+import skripsi.magfira.ambulanceapp.util.NetworkUtils
 import skripsi.magfira.ambulanceapp.util.locationUpdate
+import skripsi.magfira.ambulanceapp.util.parseLatLngFromString
 import skripsi.magfira.ambulanceapp.util.requestAllPermissions
 import skripsi.magfira.ambulanceapp.util.stopLocationUpdate
 import javax.inject.Inject
@@ -65,7 +69,13 @@ class HomeCustomerScreen(
 
         var orderingStack by rememberSaveable { mutableStateOf(listOf(ORDERING_FLOW[0])) }
         var driversOn by remember { mutableStateOf(listOf<DriversData>()) }
+        var getAllBooking by remember { mutableStateOf<AllBooking?>(null) }
+
         var isOrderAccepted by remember { mutableStateOf(false) }
+        var myUserId by remember { mutableStateOf("") }
+
+        // Check if in ordering
+        val filteredData = getAllBooking?.data?.data?.filter { it.customer_id.toString() == myUserId }
 
         if (requestAllPermissions(context = context)) {
             if (!isLocationServiceInitialized) {
@@ -81,6 +91,10 @@ class HomeCustomerScreen(
             Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
         }
 
+        LaunchedEffect(context) {
+            connectPusher() // Init pusher
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,7 +102,7 @@ class HomeCustomerScreen(
             MapViewCustomer(
                 viewModel = viewModel,
                 driversOnData = driversOn,
-                isOrderAccepted = isOrderAccepted,
+                bookingData = filteredData,
                 context = context
             )
             Column(
@@ -107,6 +121,18 @@ class HomeCustomerScreen(
                         .fillMaxWidth()
                         .background(Color.Transparent),
                 )
+
+                if (filteredData?.isNotEmpty() == true) {
+
+                    parseLatLngFromString(filteredData.get(0).lokasi_jemput)?.let {
+                        viewModel.updateMyLocation(it)
+                        stopLocationUpdate()
+                    }
+                    LaunchedEffect(filteredData) {
+                        orderingStack = orderingStack + ORDERING_FLOW[3]
+                    }
+                }
+
                 Log.d(TAG, "Ordering Stack: $orderingStack")
                 when (orderingStack.lastOrNull()) {
                     ORDERING_FLOW[0] -> {
@@ -114,7 +140,11 @@ class HomeCustomerScreen(
                             viewModel.editableLocation(false)
                         } else {
                             // Not granted
-                            Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                MSG_DO_NOT_HAS_LOCATION_PERMISSION,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                         CardMainCustomer(
                             driversOnData = driversOn,
@@ -140,7 +170,11 @@ class HomeCustomerScreen(
                             viewModel.editableLocation(true)
                         } else {
                             // Not granted
-                            Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                MSG_DO_NOT_HAS_LOCATION_PERMISSION,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                         CardEditLocationCustomer(
                             iconBackClick = {
@@ -159,12 +193,17 @@ class HomeCustomerScreen(
                             viewModel.editableLocation(false)
                         } else {
                             // Not granted
-                            Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                MSG_DO_NOT_HAS_LOCATION_PERMISSION,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                         CardDetailOrderCustomer(
                             viewModel = viewModel,
                             dataStorePreferences = dataStorePreferences,
                             context = context,
+                            driversOn = driversOn,
                             iconBackClick = {
                                 orderingStack = orderingStack.dropLast(1) + ORDERING_FLOW[0]
                             },
@@ -179,17 +218,24 @@ class HomeCustomerScreen(
                             viewModel.editableLocation(false)
                         } else {
                             // Not granted
-                            Toast.makeText(context, MSG_DO_NOT_HAS_LOCATION_PERMISSION, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                MSG_DO_NOT_HAS_LOCATION_PERMISSION,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
 
-                        CardOrderingCustomer(
-                            viewModel,
-                            context,
-                            isOrderAccepted,
-                            toMainOrder = {
-                                orderingStack = listOf(ORDERING_FLOW[0])
-                            }
-                        )
+                        filteredData?.get(0)?.let {
+                            CardOrderingCustomer(
+                                viewModel,
+                                context,
+                                it,
+                                toMainOrder = {
+                                    viewModel.cancelBooking(filteredData.get(0).id.toString())
+                                    orderingStack = listOf(ORDERING_FLOW[0])
+                                }
+                            )
+                        }
                     }
 
                     else -> {
@@ -206,6 +252,7 @@ class HomeCustomerScreen(
 
             if (isLogin == true) {
                 viewModel.token = token ?: ""
+                myUserId = dataStorePreferences.getUserId.first()!!
 
             } else {
                 // Not Login
@@ -220,6 +267,11 @@ class HomeCustomerScreen(
             }
         }
 
+        // Get all booking on
+        LaunchedEffect(true) {
+            viewModel.getAllBooking()
+        }
+
         // Get driveres on
         LaunchedEffect(driversOn) {
             viewModel.driversOn()
@@ -231,14 +283,24 @@ class HomeCustomerScreen(
             onDriversUpdated = { updatedDrivers ->
                 driversOn = updatedDrivers
             },
+            onBookingUpdate = { updatedBooking ->
+                getAllBooking = updatedBooking
+            },
             context,
         )
     }
 
     fun connectPusher() {
+        // Initialize Pusher
+        val pusherOptions = PusherOptions().setCluster(NetworkUtils.APP_CLUSTER)
+        val pusher = Pusher(NetworkUtils.APP_KEY, pusherOptions)
+
         pusher.connect(object : ConnectionEventListener {
             override fun onConnectionStateChange(change: ConnectionStateChange) {
-                Log.d(TAG, "Pusher: State changed from ${change.previousState} to ${change.currentState}")
+                Log.d(
+                    TAG,
+                    "Pusher: State changed from ${change.previousState} to ${change.currentState}"
+                )
             }
 
             override fun onError(
@@ -246,13 +308,16 @@ class HomeCustomerScreen(
                 code: String,
                 e: Exception
             ) {
-                Log.d(TAG, "Pusher: There was a problem connecting! code ($code), message ($message), exception($e)")
+                Log.d(
+                    TAG,
+                    "Pusher: There was a problem connecting! code ($code), message ($message), exception($e)"
+                )
             }
         }, ConnectionState.ALL)
 
         val channel = pusher.subscribe("my-channel")
         channel.bind("my-event") { event ->
-            Log.d(TAG,"Pusher: Received event with data: $event")
+            Log.d(TAG, "Pusher: Received event with data: $event")
         }
     }
 
@@ -260,9 +325,32 @@ class HomeCustomerScreen(
     fun ViewModelObserver(
         viewModel: OrderViewModel,
         onDriversUpdated: (List<DriversData>) -> Unit,
+        onBookingUpdate: (AllBooking) -> Unit,
         context: Context,
     ) {
+        val allBookingState = viewModel.stateAllBooking
         val driversOnState = viewModel.stateDriversOn
+        val cancelBookingState = viewModel.stateCancelBooking
+        val orderBookingState = viewModel.stateOrderBooking
+
+        when {
+            allBookingState.isLoading -> {}
+
+            allBookingState.data != null -> {
+                val bookingData = allBookingState.data
+                onBookingUpdate(bookingData!!)
+
+            }
+
+            allBookingState.error.isNotEmpty() -> {
+                val errorMessage = allBookingState.error
+                Log.d(TAG, "ViewModelObserver: $errorMessage")
+            }
+
+            else -> {
+                // Initial state or other cases
+            }
+        }
 
         when {
             driversOnState.isLoading -> {}
@@ -274,6 +362,49 @@ class HomeCustomerScreen(
 
             driversOnState.error.isNotEmpty() -> {
                 val errorMessage = driversOnState.error
+                Log.d(TAG, "ViewModelObserver: $errorMessage")
+            }
+
+            else -> {
+                // Initial state or other cases
+            }
+        }
+
+        when {
+            orderBookingState.isLoading -> {}
+
+            orderBookingState.data != null -> {
+                val orderBookingData = orderBookingState.data
+
+                LaunchedEffect(orderBookingData) {
+                    viewModel.getAllBooking()
+                }
+            }
+
+            orderBookingState.error.isNotEmpty() -> {
+                val errorMessage = orderBookingState.error
+                Log.d(TAG, "ViewModelObserver: $errorMessage")
+            }
+
+            else -> {
+                // Initial state or other cases
+            }
+        }
+
+        when {
+            cancelBookingState.isLoading -> {}
+
+            cancelBookingState.data != null -> {
+                val cancelBookingData = cancelBookingState.data
+
+                LaunchedEffect(cancelBookingData) {
+                    viewModel.getAllBooking() // Get new data
+                }
+
+            }
+
+            cancelBookingState.error.isNotEmpty() -> {
+                val errorMessage = cancelBookingState.error
                 Log.d(TAG, "ViewModelObserver: $errorMessage")
             }
 

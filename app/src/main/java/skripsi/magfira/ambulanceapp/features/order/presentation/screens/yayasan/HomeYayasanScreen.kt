@@ -45,7 +45,6 @@ class HomeYayasanScreen(
 
     @Composable
     fun MainScreen() {
-
         val context = LocalContext.current
 
         dataStorePreferences = DataStorePreferences(context)
@@ -121,7 +120,7 @@ class HomeYayasanScreen(
                 }
             }
 
-            // Get driveres on
+            // Get drivers on
             LaunchedEffect(driversOn) {
                 viewModel.driversYayasanOn()
             }

@@ -7,7 +7,7 @@ import java.lang.Math.cos
 import java.lang.Math.sin
 import java.lang.Math.sqrt
 
-class CalculateLocations {
+object CalculateLocations {
 
     fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val R = 6371.0 // Earth radius in kilometers

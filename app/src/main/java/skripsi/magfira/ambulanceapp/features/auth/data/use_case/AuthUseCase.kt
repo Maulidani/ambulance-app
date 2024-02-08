@@ -8,6 +8,7 @@ import okhttp3.RequestBody
 import retrofit2.HttpException
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.toDeleteUser
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.toLogin
+import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.toLogout
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.toRegisterCustomer
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.toRegisterYayasan
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.toShowUser
@@ -15,6 +16,7 @@ import skripsi.magfira.ambulanceapp.features.auth.domain.model.request.LoginRequ
 import skripsi.magfira.ambulanceapp.features.auth.domain.model.request.UpdateProfileRequest
 import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.DeleteUser
 import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.Login
+import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.Logout
 import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.RegisterCustomer
 import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.RegisterYayasan
 import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.ShowUser
@@ -47,6 +49,24 @@ class AuthUseCase @Inject constructor(
         } catch (e: IOException) {
             emit(Resource.Error(e.localizedMessage ?: MSG_UNEXPECTED_ERROR))
             Log.d(TAG, "login: ${e.localizedMessage ?: MSG_UNEXPECTED_ERROR}")
+        }
+    }
+
+    fun logout(token: String): Flow<Resource<Logout>> = flow {
+        try {
+            // Loading
+            emit(Resource.Loading())
+            // Request
+            val response = repository.logout(token).toLogout()
+            // Success
+            emit(Resource.Success(response))
+            Log.d(TAG, "logout: $response")
+        } catch (e: HttpException) {
+            emit(Resource.Error(e.localizedMessage ?: MSG_UNEXPECTED_ERROR))
+            Log.d(TAG, "logout: ${e.localizedMessage ?: MSG_UNEXPECTED_ERROR}")
+        } catch (e: IOException) {
+            emit(Resource.Error(e.localizedMessage ?: MSG_UNEXPECTED_ERROR))
+            Log.d(TAG, "logout: ${e.localizedMessage ?: MSG_UNEXPECTED_ERROR}")
         }
     }
 

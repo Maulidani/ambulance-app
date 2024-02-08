@@ -3,7 +3,8 @@ package skripsi.magfira.ambulanceapp.util
 object NetworkUtils {
 
     // API
-    const val BASE_URL = "http://10.0.2.2:8000/api/"
+//    const val BASE_URL = "http://10.0.2.2:8000/api/"
+    const val BASE_URL = "http://192.168.189.184:8000/api/"
     const val BASE_URL_FILE = "http://10.0.2.2:8000/storage/file/"
 
     // Pusher

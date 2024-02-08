@@ -5,6 +5,7 @@ import okhttp3.RequestBody
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.AuthApi
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.DeleteUserDto
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.LoginDto
+import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.LogoutDto
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.RegisterCustomerDto
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.RegisterYayasanDto
 import skripsi.magfira.ambulanceapp.features.auth.data.remote.dto.ShowUserDto
@@ -20,6 +21,10 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun login(request: LoginRequest): LoginDto {
         return api.login(request)
+    }
+
+    override suspend fun logout(token: String): LogoutDto {
+        return api.logout(token)
     }
 
     override suspend fun deleteUser(token: String, userId: String): DeleteUserDto {

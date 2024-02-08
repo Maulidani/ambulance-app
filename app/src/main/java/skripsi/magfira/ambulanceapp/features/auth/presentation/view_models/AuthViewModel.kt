@@ -17,6 +17,7 @@ import skripsi.magfira.ambulanceapp.features.auth.domain.model.response.DeleteUs
 import skripsi.magfira.ambulanceapp.features.auth.presentation.data_states.DeleteUserState
 import skripsi.magfira.ambulanceapp.features.auth.presentation.data_states.DriversState
 import skripsi.magfira.ambulanceapp.features.auth.presentation.data_states.LoginState
+import skripsi.magfira.ambulanceapp.features.auth.presentation.data_states.LogoutState
 import skripsi.magfira.ambulanceapp.features.auth.presentation.data_states.RegisterCustomerState
 import skripsi.magfira.ambulanceapp.features.auth.presentation.data_states.RegisterYayasanState
 import skripsi.magfira.ambulanceapp.features.auth.presentation.data_states.ShowUserState
@@ -33,6 +34,8 @@ class AuthViewModel @Inject constructor(
     lateinit var userId: String
 
     var stateLogin by mutableStateOf(LoginState())
+        private set
+    var stateLogout by mutableStateOf(LogoutState())
         private set
     var stateDeleteUser by mutableStateOf(DeleteUserState())
         private set
@@ -66,6 +69,30 @@ class AuthViewModel @Inject constructor(
 
                 is Resource.Error -> {
                     stateLogin = LoginState(
+                        error = result.message ?: MSG_UNEXPECTED_ERROR
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun logout() {
+        authUseCase.logout("Bearer $token").onEach { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    stateLogout = LogoutState(
+                        isLoading = true
+                    )
+                }
+
+                is Resource.Success -> {
+                    stateLogout = LogoutState(
+                        data = result.data
+                    )
+                }
+
+                is Resource.Error -> {
+                    stateLogout = LogoutState(
                         error = result.message ?: MSG_UNEXPECTED_ERROR
                     )
                 }
