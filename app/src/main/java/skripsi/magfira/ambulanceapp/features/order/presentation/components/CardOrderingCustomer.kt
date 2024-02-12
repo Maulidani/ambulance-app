@@ -121,24 +121,17 @@ fun CardOrderingCustomer(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start,
                 ) {
-                    Surface(
-                        modifier = Modifier
-                            .height(81.dp)
-                            .width(64.dp),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        ImageView(
-                            context = context,
-                            source = "${NetworkUtils.BASE_URL_FILE}${bookingData.driver.foto_profil}",
-                            editable = false,
-                            imageClicked = {
-                                //
-                            },
-                            iconEditClicked = {
-                                //
-                            }
-                        )
-                    }
+                    ImageView(
+                        context = context,
+                        source = "${NetworkUtils.BASE_URL_FILE}${bookingData.driver.foto_profil}",
+                        editable = false,
+                        imageClicked = {
+                            //
+                        },
+                        iconEditClicked = {
+                            //
+                        }
+                    )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(
                         modifier = Modifier

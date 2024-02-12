@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.connection.ConnectionEventListener
@@ -33,7 +34,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBarHome
+import skripsi.magfira.ambulanceapp.features.common.presentation.components.LoadingDialog
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.AllBooking
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.pusher.BookingEventData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.pusher.OrderBookingEvent
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardActivationDriver
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardOrderingDriver
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.MapViewDefault
@@ -60,6 +64,7 @@ class HomeDriverScreen(
 
     @Inject
     lateinit var pusher: Pusher
+    private var currentBookingId = ""
 
     @Composable
     fun MainScreen() {
@@ -199,10 +204,10 @@ class HomeDriverScreen(
 
     }
 
-    private fun connectPusher() {
+    fun connectPusher() {
         // Initialize Pusher
         val pusherOptions = PusherOptions().setCluster(NetworkUtils.APP_CLUSTER)
-        val pusher = Pusher(NetworkUtils.APP_KEY, pusherOptions)
+        pusher = Pusher(NetworkUtils.APP_KEY, pusherOptions)
 
         pusher.connect(object : ConnectionEventListener {
             override fun onConnectionStateChange(change: ConnectionStateChange) {
@@ -214,20 +219,75 @@ class HomeDriverScreen(
 
             override fun onError(
                 message: String,
-                code: String,
+                code: String?,
                 e: Exception
             ) {
-                Log.d(
-                    TAG,
-                    "Pusher: There was a problem connecting! code ($code), message ($message), exception($e)"
-                )
+                if (code != null) {
+                    Log.d(
+                        TAG,
+                        "Pusher: There was a problem connecting! code ($code), message ($message), exception($e)"
+                    )
+                } else {
+                    Log.d(
+                        TAG,
+                        "Pusher: There was a problem connecting! code is null, message ($message), exception($e)"
+                    )
+                }
             }
         }, ConnectionState.ALL)
 
-        val channel = pusher.subscribe("my-channel")
-        channel.bind("my-event") { event ->
-            Log.d(TAG, "Pusher: Received event with data: $event")
+        val channelBookingCreated = pusher.subscribe("boking-created")
+        val channelBookingUpdated = pusher.subscribe("boking-status-updated${currentBookingId}")
+        val channelMessage = pusher.subscribe("chat-room")
+        val channelDriverLocation = pusher.subscribe("location-driver")
+
+        channelBookingCreated.bind("App\\Events\\BokingCreated") { event ->
+            Log.d(TAG, "Pusher: BokingCreated: Received event with data: ${event}")
+            try {
+                val gson = Gson()
+                val bookingEvent = gson.fromJson(event.toString(), OrderBookingEvent::class.java)
+                val bookingEventData =
+                    gson.fromJson(bookingEvent.data, BookingEventData::class.java)
+
+                Log.d(TAG, "Pusher: BokingCreated: After make it in model: ${bookingEventData}")
+
+                // Get all booking on
+                viewModel?.getAllBooking()
+
+            } catch (e: Exception) {
+                Log.d(TAG, "Pusher: BokingCreated: Error: ${e.localizedMessage}")
+            }
+
         }
+        channelBookingUpdated.bind("App\\Events\\BokingStatusUpdated") { event ->
+            Log.d(TAG, "Pusher: BokingStatusUpdated: Received event with data: ${event}")
+            try {
+                val gson = Gson()
+                val bookingEvent = gson.fromJson(event.toString(), OrderBookingEvent::class.java)
+                val bookingEventData =
+                    gson.fromJson(bookingEvent.data, BookingEventData::class.java)
+
+                Log.d(
+                    TAG,
+                    "Pusher: BokingStatusUpdated: After make it in model: ${bookingEventData}"
+                )
+
+                if (currentBookingId == bookingEventData.booking.id.toString()) {
+                    // Get all booking on
+                    viewModel?.getAllBooking()
+                }
+
+            } catch (e: Exception) {
+                Log.d(TAG, "Pusher: BokingStatusUpdated: Error: ${e.localizedMessage}")
+            }
+        }
+        channelMessage.bind("App\\Events\\MessageSent") { event ->
+            Log.d(TAG, "Pusher: MessageSent: Received event with data: $event")
+        }
+        channelDriverLocation.bind("App\\Events\\LokasiDriver") { event ->
+            Log.d(TAG, "Pusher:DriverLocation: Received event with data: $event")
+        }
+
     }
 
     @Composable
@@ -241,11 +301,25 @@ class HomeDriverScreen(
         val cancelBookingState = viewModel.stateCancelBooking
 
         when {
-            allBookingState.isLoading -> {}
+            allBookingState.isLoading -> {
+
+                LoadingDialog(onDismissRequest = {
+                    // Handle dismiss action if needed
+                })
+
+            }
 
             allBookingState.data != null -> {
-                val driversData = allBookingState.data
-                onBookingUpdate(driversData!!)
+                val bookingData = allBookingState.data
+                onBookingUpdate(bookingData!!)
+
+                LaunchedEffect(bookingData) {
+                    // Set bookingId
+                    if (bookingData.data.data.isNotEmpty()) {
+                        currentBookingId = bookingData.data.data.get(0).id.toString()
+                    }
+                    connectPusher() // Init pusher
+                }
 
             }
 
@@ -260,7 +334,13 @@ class HomeDriverScreen(
         }
 
         when {
-            acceptBookingState.isLoading -> {}
+            acceptBookingState.isLoading -> {
+
+                LoadingDialog(onDismissRequest = {
+                    // Handle dismiss action if needed
+                })
+
+            }
 
             acceptBookingState.data != null -> {
                 val acceptBookingData = acceptBookingState.data

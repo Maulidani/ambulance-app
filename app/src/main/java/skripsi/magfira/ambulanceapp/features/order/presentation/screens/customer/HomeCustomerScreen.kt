@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.connection.ConnectionEventListener
@@ -27,9 +29,13 @@ import com.pusher.client.connection.ConnectionStateChange
 import kotlinx.coroutines.flow.first
 import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.common.presentation.components.AppBarHome
+import skripsi.magfira.ambulanceapp.features.common.presentation.components.LoadingDialog
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.AllBooking
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.MapViewCustomer
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.OrderBooking
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.pusher.BookingEventData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.pusher.OrderBookingEvent
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardDetailOrderCustomer
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardEditLocationCustomer
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardMainCustomer
@@ -52,6 +58,7 @@ class HomeCustomerScreen(
 ) {
     private val TAG = "HomeCustomerScreen"
     private val ORDERING_FLOW = listOf("Main", "Change Location", "Detail", "Ordering")
+    private val ORDERING_STATUS = listOf("dalam proses", "diterima")
 
     private var isLocationServiceInitialized = false
 
@@ -60,6 +67,7 @@ class HomeCustomerScreen(
 
     @Inject
     lateinit var pusher: Pusher
+    private var currentBookingId = ""
 
     @Composable
     fun MainScreen() {
@@ -67,7 +75,7 @@ class HomeCustomerScreen(
 
         dataStorePreferences = DataStorePreferences(context)
 
-        var orderingStack by rememberSaveable { mutableStateOf(listOf(ORDERING_FLOW[0])) }
+        var orderingStack by remember { mutableStateOf(listOf(ORDERING_FLOW[0])) }
         var driversOn by remember { mutableStateOf(listOf<DriversData>()) }
         var getAllBooking by remember { mutableStateOf<AllBooking?>(null) }
 
@@ -75,7 +83,8 @@ class HomeCustomerScreen(
         var myUserId by remember { mutableStateOf("") }
 
         // Check if in ordering
-        val filteredData = getAllBooking?.data?.data?.filter { it.customer_id.toString() == myUserId }
+        val filteredData =
+            getAllBooking?.data?.data?.filter { it.customer_id.toString() == myUserId }
 
         if (requestAllPermissions(context = context)) {
             if (!isLocationServiceInitialized) {
@@ -92,7 +101,7 @@ class HomeCustomerScreen(
         }
 
         LaunchedEffect(context) {
-            connectPusher() // Init pusher
+            connectPusher() // init pusher
         }
 
         Box(
@@ -225,16 +234,18 @@ class HomeCustomerScreen(
                             ).show()
                         }
 
-                        filteredData?.get(0)?.let {
-                            CardOrderingCustomer(
-                                viewModel,
-                                context,
-                                it,
-                                toMainOrder = {
-                                    viewModel.cancelBooking(filteredData.get(0).id.toString())
-                                    orderingStack = listOf(ORDERING_FLOW[0])
-                                }
-                            )
+                        filteredData?.let {
+                            if (it.isNotEmpty()) {
+                                CardOrderingCustomer(
+                                    viewModel,
+                                    context,
+                                    it[0],
+                                    toMainOrder = {
+                                        viewModel.cancelBooking(filteredData.get(0).id.toString())
+                                        orderingStack = listOf(ORDERING_FLOW[0])
+                                    }
+                                )
+                            }
                         }
                     }
 
@@ -293,7 +304,7 @@ class HomeCustomerScreen(
     fun connectPusher() {
         // Initialize Pusher
         val pusherOptions = PusherOptions().setCluster(NetworkUtils.APP_CLUSTER)
-        val pusher = Pusher(NetworkUtils.APP_KEY, pusherOptions)
+        pusher = Pusher(NetworkUtils.APP_KEY, pusherOptions)
 
         pusher.connect(object : ConnectionEventListener {
             override fun onConnectionStateChange(change: ConnectionStateChange) {
@@ -305,20 +316,67 @@ class HomeCustomerScreen(
 
             override fun onError(
                 message: String,
-                code: String,
+                code: String?,
                 e: Exception
             ) {
-                Log.d(
-                    TAG,
-                    "Pusher: There was a problem connecting! code ($code), message ($message), exception($e)"
-                )
+                if (code != null) {
+                    Log.d(
+                        TAG,
+                        "Pusher: There was a problem connecting! code ($code), message ($message), exception($e)"
+                    )
+                } else {
+                    Log.d(
+                        TAG,
+                        "Pusher: There was a problem connecting! code is null, message ($message), exception($e)"
+                    )
+                }
             }
         }, ConnectionState.ALL)
 
-        val channel = pusher.subscribe("my-channel")
-        channel.bind("my-event") { event ->
-            Log.d(TAG, "Pusher: Received event with data: $event")
+        val channelBookingCreated = pusher.subscribe("boking-created")
+        val channelBookingUpdated = pusher.subscribe("boking-status-updated${currentBookingId}")
+        val channelMessage = pusher.subscribe("chat-room")
+        val channelDriverLocation = pusher.subscribe("location-driver")
+
+        channelBookingCreated.bind("App\\Events\\BokingCreated") { event ->
+            Log.d(TAG, "Pusher: BokingStatusUpdated: Received event with data: ${event}")
+            try {
+                val gson = Gson()
+                val bookingEvent = gson.fromJson(event.toString(), OrderBookingEvent::class.java)
+                val bookingEventData = gson.fromJson(bookingEvent.data, BookingEventData::class.java)
+
+                Log.d(TAG, "Pusher: BokingStatusUpdated: After make it in model: ${bookingEventData}")
+
+            } catch (e: Exception) {
+                Log.d(TAG, "Pusher: BokingCreated: Error: ${e.localizedMessage}")
+            }
+
         }
+        channelBookingUpdated.bind("App\\Events\\BokingStatusUpdated") { event ->
+            Log.d(TAG, "Pusher: BokingStatusUpdated: Received event with data: ${event}")
+            try {
+                val gson = Gson()
+                val bookingEvent = gson.fromJson(event.toString(), OrderBookingEvent::class.java)
+                val bookingEventData = gson.fromJson(bookingEvent.data, BookingEventData::class.java)
+
+                Log.d(TAG, "Pusher: BokingStatusUpdated: After make it in model: ${bookingEventData}")
+
+                if (currentBookingId == bookingEventData.booking.id.toString()) {
+                    // Get all booking on
+                    viewModel.getAllBooking()
+                }
+
+            } catch (e: Exception) {
+                Log.d(TAG, "Pusher: BokingStatusUpdated: Error: ${e.localizedMessage}")
+            }
+        }
+        channelMessage.bind("App\\Events\\MessageSent") { event ->
+            Log.d(TAG, "Pusher: MessageSent: Received event with data: $event")
+        }
+        channelDriverLocation.bind("App\\Events\\LokasiDriver") { event ->
+            Log.d(TAG, "Pusher:DriverLocation: Received event with data: $event")
+        }
+
     }
 
     @Composable
@@ -334,11 +392,25 @@ class HomeCustomerScreen(
         val orderBookingState = viewModel.stateOrderBooking
 
         when {
-            allBookingState.isLoading -> {}
+            allBookingState.isLoading -> {
+
+                LoadingDialog(onDismissRequest = {
+                    // Handle dismiss action if needed
+                })
+
+            }
 
             allBookingState.data != null -> {
                 val bookingData = allBookingState.data
                 onBookingUpdate(bookingData!!)
+
+                LaunchedEffect(bookingData) {
+                    // Set bookingId
+                    if (bookingData.data.data.isNotEmpty()) {
+                        currentBookingId = bookingData.data.data.get(0).id.toString()
+                    }
+                    connectPusher() // Init pusher
+                }
 
             }
 
@@ -353,7 +425,13 @@ class HomeCustomerScreen(
         }
 
         when {
-            driversOnState.isLoading -> {}
+            driversOnState.isLoading -> {
+
+                LoadingDialog(onDismissRequest = {
+                    // Handle dismiss action if needed
+                })
+
+            }
 
             driversOnState.data != null -> {
                 val driversData = driversOnState.data
@@ -371,13 +449,24 @@ class HomeCustomerScreen(
         }
 
         when {
-            orderBookingState.isLoading -> {}
+            orderBookingState.isLoading -> {
+
+                LoadingDialog(onDismissRequest = {
+                    // Handle dismiss action if needed
+                })
+
+            }
 
             orderBookingState.data != null -> {
                 val orderBookingData = orderBookingState.data
 
                 LaunchedEffect(orderBookingData) {
                     viewModel.getAllBooking()
+
+                    // Set pusher
+                    currentBookingId = orderBookingData?.data?.id.toString()
+                    connectPusher() // Init pusher
+
                 }
             }
 

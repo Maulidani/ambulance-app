@@ -37,6 +37,7 @@ fun OrderRequestDataDto.toOrderRequestData(): OrderRequestData {
         lokasi_jemput = lokasi_jemput,
         detail_pesanan = detail_pesanan,
         updated_at = updated_at,
-        created_at = created_at
+        created_at = created_at,
+        id = id
     )
 }
