@@ -2,6 +2,7 @@ package skripsi.magfira.ambulanceapp.util
 
 import android.content.ContentResolver
 import android.content.Context
+import android.database.Cursor
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
@@ -9,8 +10,10 @@ import android.webkit.MimeTypeMap
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import skripsi.magfira.ambulanceapp.util.MimeFileType.FILE_TYPE_ALLOWED
+import java.io.File
 import java.io.InputStream
 
 object MultipartUtils {
@@ -24,7 +27,7 @@ object MultipartUtils {
     // Function to create MultipartBody.Part from URI
 //    fun createUriPart(context: Context, uri: Uri, partName: String): MultipartBody.Part {
 //        val file = uri.path?.let { File(it) }
-//        val filePath = uri.path
+//        val filePath = getPathFromURI(context, uri)
 //
 //        val contentType = getMimeType(context, uri) ?: "*/*"
 //        Log.d(TAG, "createUriPart: Selected File MIME Type: $contentType")
@@ -87,6 +90,22 @@ object MultipartUtils {
             val fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
             MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.lowercase())
         }
+    }
+
+    // Function to get the file path from URI
+    fun getPathFromURI(context: Context, uri: Uri): String? {
+        var path: String? = null
+        val contentResolver: ContentResolver = context.contentResolver
+        val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val pathIndex: Int = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (pathIndex != -1) {
+                    path = it.getString(pathIndex)
+                }
+            }
+        }
+        return path
     }
 
 }

@@ -79,10 +79,6 @@ class RegisterCustomerScreen(
             contract = ActivityResultContracts.PickVisualMedia(),
             onResult = { uri -> selectedImageUri = uri }
         )
-//        val photoPickerLauncher = rememberLauncherForActivityResult(
-//            contract = ActivityResultContracts.OpenDocument(),
-//            onResult = { uri -> selectedImageUri = uri }
-//        )
 
         Column(
             modifier = Modifier

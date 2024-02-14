@@ -42,7 +42,8 @@ import skripsi.magfira.ambulanceapp.util.parseLatLngFromString
 fun CardOrderingDriver(
     viewModel: OrderViewModel?,
     bookingData: BookingData,
-    context: Context
+    context: Context,
+    toChat: () -> Unit,
 ) {
     val REQUEST_ORDERING_FLOW = listOf("Ada pesanan...", "Sedang dalam pesanan")
     val ORDERING_FLOW = listOf("dalam proses", "diterima")
@@ -152,6 +153,7 @@ fun CardOrderingDriver(
                         onClick = {
                             if (orderAccapted) {
                                 // Chat customer
+                                toChat()
                             } else {
                                 // Accept request pesanan
                                 val acceptBookingRequest = AcceptBookingRequest()

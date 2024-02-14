@@ -46,6 +46,7 @@ import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.Orde
 import skripsi.magfira.ambulanceapp.navigation.ScreenRouter
 import skripsi.magfira.ambulanceapp.util.MessageUtils
 import skripsi.magfira.ambulanceapp.util.NetworkUtils
+import skripsi.magfira.ambulanceapp.util.OpenChat
 import skripsi.magfira.ambulanceapp.util.locationUpdate
 import skripsi.magfira.ambulanceapp.util.requestAllPermissions
 import javax.inject.Inject
@@ -196,7 +197,10 @@ class HomeDriverScreen(
                     CardOrderingDriver(
                         viewModel,
                         filteredData.get(0),
-                        context
+                        context,
+                        toChat = {
+                            OpenChat.openWhatsAppChat(context, filteredData.get(0).customer.no_telp, "")
+                        }
                     )
                 }
             }

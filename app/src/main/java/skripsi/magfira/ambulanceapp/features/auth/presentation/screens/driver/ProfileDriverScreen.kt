@@ -161,7 +161,8 @@ class ProfileDriverScreen(
                                 scope.launch {
                                     snackbarHostState
                                         .showSnackbar(
-                                            message = "Cannot edit photo, ${MessageUtils.MSG_COOMING_SOON}",
+//                                            message = "Cannot edit photo, ${MessageUtils.MSG_COOMING_SOON}",
+                                            message = "Hubungi yayasan anda untuk mengubah foto",
                                             duration = SnackbarDuration.Short
                                         )
                                 }
@@ -176,7 +177,7 @@ class ProfileDriverScreen(
                                 scope.launch {
                                     snackbarHostState
                                         .showSnackbar(
-                                            message = "Cannot edit name, ${MessageUtils.MSG_COOMING_SOON}",
+                                            message = "Hubungi yayasan anda untuk mengubah nama",
                                             duration = SnackbarDuration.Short
                                         )
                                 }
@@ -192,7 +193,7 @@ class ProfileDriverScreen(
                             scope.launch {
                                 snackbarHostState
                                     .showSnackbar(
-                                        message = "Cannot edit phone, ${MessageUtils.MSG_COOMING_SOON}",
+                                        message = "Hubungi yayasan anda untuk mengubah no telepon",
                                         duration = SnackbarDuration.Short
                                     )
                             }

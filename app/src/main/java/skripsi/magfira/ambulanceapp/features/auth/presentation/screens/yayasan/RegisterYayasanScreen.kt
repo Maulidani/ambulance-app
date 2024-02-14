@@ -3,6 +3,7 @@ package skripsi.magfira.ambulanceapp.features.auth.presentation.screens.yayasan
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -57,7 +58,7 @@ class RegisterYayasanScreen(
     private val navController: NavHostController?
 ) {
     // Safe back
-    private val NavHostController.canGoBack : Boolean
+    private val NavHostController.canGoBack: Boolean
         get() = this.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
 
     @Composable
@@ -69,18 +70,26 @@ class RegisterYayasanScreen(
         var email by rememberSaveable { mutableStateOf("") }
         var phone by rememberSaveable { mutableStateOf("") }
         var address by rememberSaveable { mutableStateOf("") }
-        var uploadFile by rememberSaveable { mutableStateOf("Surat Izin Pendirian Yayasan") }
+        var uploadFile by rememberSaveable { mutableStateOf("Foto Surat Izin Pendirian Yayasan") }
+//        var uploadFile by rememberSaveable { mutableStateOf("Surat Izin Pendirian Yayasan") }
 
         var selectedFile by rememberSaveable {
             mutableStateOf<Uri?>(null)
         }
-        val filePickerLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.OpenDocument(),
+        val photoPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
             onResult = { uri ->
                 selectedFile = uri
-                uploadFile = "File selected"
+                uploadFile = "Berhasil memilih foto"
             }
         )
+//        val filePickerLauncher = rememberLauncherForActivityResult(
+//            contract = ActivityResultContracts.OpenDocument(),
+//            onResult = { uri ->
+//                selectedFile = uri
+//                uploadFile = "File selected"
+//            }
+//        )
 
         Column(
             modifier = Modifier
@@ -149,7 +158,10 @@ class RegisterYayasanScreen(
                         icon = Icons.Default.UploadFile,
                         selectedImage = { null },
                         onUploadClick = {
-                            filePickerLauncher.launch(FILE_TYPE_SURAT_IZIN_YAYASAN)
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+//                            filePickerLauncher.launch(FILE_TYPE_SURAT_IZIN_YAYASAN)
                         }
                     )
                     Spacer(modifier = Modifier.height(24.dp))
@@ -168,22 +180,42 @@ class RegisterYayasanScreen(
                                     address.isEmpty() ||
                                     selectedFile == null
                                 ) {
-                                    Toast.makeText(context, MSG_REQUIRED_FIELDS, Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, MSG_REQUIRED_FIELDS, Toast.LENGTH_SHORT)
+                                        .show()
                                 } else if (
                                     !containsNoSpaces(name) ||
                                     !containsNoSpaces(email) ||
                                     !containsNoSpaces(phone) ||
                                     !containsNoSpaces(address)
                                 ) {
-                                    Toast.makeText(context, MSG_INPUT_CONTAIN_SPACE, Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        MSG_INPUT_CONTAIN_SPACE,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 } else if (!InputValidation.isValidEmailFormat(email)) {
-                                    Toast.makeText(context, MSG_INPUT_INVALID_EMAIL, Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        MSG_INPUT_INVALID_EMAIL,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 } else if (!InputValidation.isValidPhoneFormat(phone)) {
-                                    Toast.makeText(context, MSG_INPUT_INVALID_PHONE, Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        MSG_INPUT_INVALID_PHONE,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 } else {
-                                    val encodedUriString: String = Uri.encode(selectedFile.toString())
+                                    val encodedUriString: String =
+                                        Uri.encode(selectedFile.toString())
                                     navController?.navigate(
-                                        ScreenRouter.AuthRegisterAccountYayasan.routeWithArguments(name,email,phone,address,encodedUriString)
+                                        ScreenRouter.AuthRegisterAccountYayasan.routeWithArguments(
+                                            name,
+                                            email,
+                                            phone,
+                                            address,
+                                            encodedUriString
+                                        )
                                     )
                                 }
                             },

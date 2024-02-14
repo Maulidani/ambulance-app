@@ -236,26 +236,28 @@ class RegisterAccountCustomerScreen(
                                                 context
                                             ).second
 
-                                            // Show confirmation
-                                            scope.launch {
-                                                val result = snackbarHostState
-                                                    .showSnackbar(
-                                                        message = MessageUtils.MSG_REGISTER_CONFIRM,
-                                                        actionLabel = "Yes",
-                                                        // Defaults to SnackbarDuration.Short
-                                                        duration = SnackbarDuration.Long
-                                                    )
-                                                when (result) {
-                                                    SnackbarResult.ActionPerformed -> {
-                                                        // Continue register
-                                                        viewModel?.registerCustomer(partMap, imagePart)
-                                                    }
+                                            viewModel?.registerCustomer(partMap, imagePart)
 
-                                                    SnackbarResult.Dismissed -> {
-                                                        /* Handle snackbar dismissed */
-                                                    }
-                                                }
-                                            }
+//                                            // Show confirmation
+//                                            scope.launch {
+//                                                val result = snackbarHostState
+//                                                    .showSnackbar(
+//                                                        message = MessageUtils.MSG_REGISTER_CONFIRM,
+//                                                        actionLabel = "Yes",
+//                                                        // Defaults to SnackbarDuration.Short
+//                                                        duration = SnackbarDuration.Long
+//                                                    )
+//                                                when (result) {
+//                                                    SnackbarResult.ActionPerformed -> {
+//                                                        // Continue register
+//                                                        viewModel?.registerCustomer(partMap, imagePart)
+//                                                    }
+//
+//                                                    SnackbarResult.Dismissed -> {
+//                                                        /* Handle snackbar dismissed */
+//                                                    }
+//                                                }
+//                                            }
 
                                         } catch (e: Exception) {
                                             Log.d(

@@ -41,6 +41,7 @@ import skripsi.magfira.ambulanceapp.features.common.presentation.components.Imag
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.BookingData
 import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
 import skripsi.magfira.ambulanceapp.util.NetworkUtils
+import skripsi.magfira.ambulanceapp.util.OpenChat
 import skripsi.magfira.ambulanceapp.util.getReadableLocation
 import skripsi.magfira.ambulanceapp.util.parseLatLngFromString
 
@@ -49,7 +50,8 @@ fun CardOrderingCustomer(
     viewModel: OrderViewModel,
     context: Context,
     bookingData: BookingData,
-    toMainOrder: () -> Unit
+    toMainOrder: () -> Unit,
+    toChat: () -> Unit,
 ) {
     val ORDERING_FLOW = listOf("dalam proses", "diterima")
 
@@ -227,7 +229,7 @@ fun CardOrderingCustomer(
                         modifier = Modifier.weight(1F),
                         onClick = {
                             if (orderAcceptByDriver) {
-                                // Go chat
+                                toChat()
                             }
                         },
                         text = if (orderAcceptByDriver) "Chat Driver" else "Menunggu...",

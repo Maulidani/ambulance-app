@@ -46,6 +46,7 @@ import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_DO_NOT_HAS_LOCATION_PE
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_NONE_AMBULANCE_ACTIVE
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_UNAUTHORIZED
 import skripsi.magfira.ambulanceapp.util.NetworkUtils
+import skripsi.magfira.ambulanceapp.util.OpenChat
 import skripsi.magfira.ambulanceapp.util.locationUpdate
 import skripsi.magfira.ambulanceapp.util.parseLatLngFromString
 import skripsi.magfira.ambulanceapp.util.requestAllPermissions
@@ -243,6 +244,9 @@ class HomeCustomerScreen(
                                     toMainOrder = {
                                         viewModel.cancelBooking(filteredData.get(0).id.toString())
                                         orderingStack = listOf(ORDERING_FLOW[0])
+                                    },
+                                    toChat = {
+                                        OpenChat.openWhatsAppChat(context, filteredData.get(0).driver.no_telp, "")
                                     }
                                 )
                             }
