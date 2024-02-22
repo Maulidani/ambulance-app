@@ -9,12 +9,27 @@ import retrofit2.http.Path
 import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.AcceptBookingDto
 import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.AllBookingDto
 import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.DriversDto
+import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.GetLocationDto
 import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.OrderBookingDto
 import skripsi.magfira.ambulanceapp.features.order.domain.model.request.AcceptBookingRequest
 import skripsi.magfira.ambulanceapp.features.order.domain.model.request.OrderRequest
+import skripsi.magfira.ambulanceapp.features.order.domain.model.request.UpdateLocationRequest
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.AllBooking
 
 interface OrderApi {
+
+    @GET("admin/get_lokasi/{driverId}")
+    suspend fun getDriverLocation(
+        @Header("Authorization") token: String,
+        @Path("driverId") driverId: String
+    ): GetLocationDto
+
+    @POST("admin/update_lokasi/{userId}")
+    suspend fun updateLocation(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: String,
+        @Body orderRequest: UpdateLocationRequest
+    ): GetLocationDto
 
     @GET("admin/all_driver_on")
     suspend fun driversOn(

@@ -1,6 +1,7 @@
 package skripsi.magfira.ambulanceapp.features.order.presentation.view_models
 
 import android.content.Context
+import android.location.Location
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,14 +10,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import skripsi.magfira.ambulanceapp.datastore.DataStorePreferences
 import skripsi.magfira.ambulanceapp.features.order.data.use_case.OrderUseCase
 import skripsi.magfira.ambulanceapp.features.order.domain.model.request.AcceptBookingRequest
 import skripsi.magfira.ambulanceapp.features.order.domain.model.request.OrderRequest
+import skripsi.magfira.ambulanceapp.features.order.domain.model.request.UpdateLocationRequest
 import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.AcceptBookingState
 import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.DriversOnState
 import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.GetAllBookingState
+import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.GetLocationState
 import skripsi.magfira.ambulanceapp.features.order.presentation.data_states.OrderBookingState
 import skripsi.magfira.ambulanceapp.util.LocationProvider
 import skripsi.magfira.ambulanceapp.util.MessageUtils.MSG_UNEXPECTED_ERROR
@@ -29,7 +34,11 @@ class OrderViewModel @Inject constructor(
     private val orderUseCase: OrderUseCase
 ) : ViewModel() {
 
+    private val USER_ROLES = listOf("Customer", "Driver", "Yayasan")
+
     lateinit var token: String
+    lateinit var role: String
+    lateinit var userId: String
 
     var currentLocation by mutableStateOf(LatLng(0.0, 0.0))
         private set
@@ -40,16 +49,43 @@ class OrderViewModel @Inject constructor(
     fun InitializeLocation(context: Context) {
         LocationProvider(context) {
             currentLocation = LatLng(it.latitude, it.longitude)
-            stopLocationUpdate() // Stop when get data
+
+            if (role.lowercase() == USER_ROLES[1].lowercase()) { // If driver
+                val distance = FloatArray(1)
+                Location.distanceBetween(
+                    currentLocation.latitude, currentLocation.longitude,
+                    it.latitude, it.longitude,
+                    distance
+                )
+                val range = 50.0 // in meters
+
+                if (distance[0] >= range) {
+                    currentLocation = LatLng(it.latitude, it.longitude)
+
+                    // Update to server
+                    val request = UpdateLocationRequest(
+                        currentLocation.latitude.toString(),
+                        currentLocation.longitude.toString(),
+                    )
+                    updateLocation(request)
+                }
+            }
+
         }
     }
+
     fun editableLocation(isEditable: Boolean) {
         editableMyLocation = isEditable
     }
+
     fun updateMyLocation(latLng: LatLng) {
         currentLocation = latLng
     }
 
+    var stateDriverLocation by mutableStateOf(GetLocationState())
+        private set
+    var stateUpdateLocation by mutableStateOf(GetLocationState())
+        private set
     var stateDriversOn by mutableStateOf(DriversOnState())
         private set
     var stateDriversYayasanOn by mutableStateOf(DriversOnState())
@@ -62,6 +98,55 @@ class OrderViewModel @Inject constructor(
         private set
     var stateCancelBooking by mutableStateOf(AcceptBookingState())
         private set
+
+    fun getDriverLocation(driverId: String) {
+        orderUseCase.getDriverLocation("Bearer $token", driverId).onEach { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    stateDriverLocation = GetLocationState(
+                        isLoading = true
+                    )
+                }
+
+                is Resource.Success -> {
+                    stateDriverLocation = GetLocationState(
+                        data = result.data
+                    )
+                }
+
+                is Resource.Error -> {
+                    stateDriverLocation = GetLocationState(
+                        error = result.message ?: MSG_UNEXPECTED_ERROR
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun updateLocation(updateLocationRequest: UpdateLocationRequest) {
+        orderUseCase.updateLocation("Bearer $token", userId, updateLocationRequest)
+            .onEach { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        stateUpdateLocation = GetLocationState(
+                            isLoading = true
+                        )
+                    }
+
+                    is Resource.Success -> {
+                        stateUpdateLocation = GetLocationState(
+                            data = result.data
+                        )
+                    }
+
+                    is Resource.Error -> {
+                        stateUpdateLocation = GetLocationState(
+                            error = result.message ?: MSG_UNEXPECTED_ERROR
+                        )
+                    }
+                }
+            }.launchIn(viewModelScope)
+    }
 
     fun driversOn() {
         orderUseCase.driversOn("Bearer $token").onEach { result ->
@@ -160,27 +245,28 @@ class OrderViewModel @Inject constructor(
     }
 
     fun acceptBooking(bookingId: String, acceptBookingRequest: AcceptBookingRequest) {
-        orderUseCase.acceptBooking("Bearer $token", bookingId, acceptBookingRequest).onEach { result ->
-            when (result) {
-                is Resource.Loading -> {
-                    stateAcceptBooking = AcceptBookingState(
-                        isLoading = true
-                    )
-                }
+        orderUseCase.acceptBooking("Bearer $token", bookingId, acceptBookingRequest)
+            .onEach { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        stateAcceptBooking = AcceptBookingState(
+                            isLoading = true
+                        )
+                    }
 
-                is Resource.Success -> {
-                    stateAcceptBooking = AcceptBookingState(
-                        data = result.data
-                    )
-                }
+                    is Resource.Success -> {
+                        stateAcceptBooking = AcceptBookingState(
+                            data = result.data
+                        )
+                    }
 
-                is Resource.Error -> {
-                    stateAcceptBooking = AcceptBookingState(
-                        error = result.message ?: MSG_UNEXPECTED_ERROR
-                    )
+                    is Resource.Error -> {
+                        stateAcceptBooking = AcceptBookingState(
+                            error = result.message ?: MSG_UNEXPECTED_ERROR
+                        )
+                    }
                 }
-            }
-        }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
     }
 
     fun cancelBooking(bookingId: String) {

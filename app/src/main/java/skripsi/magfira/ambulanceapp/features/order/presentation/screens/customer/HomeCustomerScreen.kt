@@ -35,6 +35,7 @@ import skripsi.magfira.ambulanceapp.features.order.presentation.components.MapVi
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.OrderBooking
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.pusher.BookingEventData
+import skripsi.magfira.ambulanceapp.features.order.domain.model.response.pusher.LocationEventData
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.pusher.OrderBookingEvent
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardDetailOrderCustomer
 import skripsi.magfira.ambulanceapp.features.order.presentation.components.CardEditLocationCustomer
@@ -69,6 +70,7 @@ class HomeCustomerScreen(
     @Inject
     lateinit var pusher: Pusher
     private var currentBookingId = ""
+    private var currentDriverId = ""
 
     @Composable
     fun MainScreen() {
@@ -83,12 +85,37 @@ class HomeCustomerScreen(
         var isOrderAccepted by remember { mutableStateOf(false) }
         var myUserId by remember { mutableStateOf("") }
 
+        // Check Login
+        LaunchedEffect(true) {
+            val isLogin = dataStorePreferences.getUserIsLogin.first()
+            val token = dataStorePreferences.getUserToken.first()
+            val role = dataStorePreferences.getUserRole.first()
+            myUserId = dataStorePreferences.getUserId.first()!!
+
+            if (isLogin == true) {
+                viewModel.token = token ?: ""
+                viewModel.role = role ?: ""
+                viewModel.userId = myUserId ?: ""
+
+            } else {
+                // Not Login
+                Toast.makeText(context, MSG_UNAUTHORIZED, Toast.LENGTH_SHORT).show()
+
+                // Unauthorized
+                navController?.navigate(ScreenRouter.Auth.route) {
+                    popUpTo(ScreenRouter.Customer.route) {
+                        inclusive = false
+                    }
+                }
+            }
+        }
+
         // Check if in ordering
         val filteredData =
             getAllBooking?.data?.data?.filter { it.customer_id.toString() == myUserId }
 
         if (requestAllPermissions(context = context)) {
-            if (!isLocationServiceInitialized) {
+            if (!isLocationServiceInitialized && myUserId != "") {
                 viewModel.InitializeLocation(context = context)
                 locationUpdate()
 
@@ -178,6 +205,7 @@ class HomeCustomerScreen(
                     ORDERING_FLOW[1] -> {
                         if (requestAllPermissions(context = context)) {
                             viewModel.editableLocation(true)
+                            stopLocationUpdate()
                         } else {
                             // Not granted
                             Toast.makeText(
@@ -201,6 +229,7 @@ class HomeCustomerScreen(
                     ORDERING_FLOW[2] -> {
                         if (requestAllPermissions(context = context)) {
                             viewModel.editableLocation(false)
+                            stopLocationUpdate()
                         } else {
                             // Not granted
                             Toast.makeText(
@@ -226,6 +255,7 @@ class HomeCustomerScreen(
                     ORDERING_FLOW[3] -> {
                         if (requestAllPermissions(context = context)) {
                             viewModel.editableLocation(false)
+                            stopLocationUpdate()
                         } else {
                             // Not granted
                             Toast.makeText(
@@ -255,28 +285,6 @@ class HomeCustomerScreen(
 
                     else -> {
                         // Default case
-                    }
-                }
-            }
-        }
-
-        // Check Login
-        LaunchedEffect(true) {
-            val isLogin = dataStorePreferences.getUserIsLogin.first()
-            val token = dataStorePreferences.getUserToken.first()
-
-            if (isLogin == true) {
-                viewModel.token = token ?: ""
-                myUserId = dataStorePreferences.getUserId.first()!!
-
-            } else {
-                // Not Login
-                Toast.makeText(context, MSG_UNAUTHORIZED, Toast.LENGTH_SHORT).show()
-
-                // Unauthorized
-                navController?.navigate(ScreenRouter.Auth.route) {
-                    popUpTo(ScreenRouter.Customer.route) {
-                        inclusive = false
                     }
                 }
             }
@@ -340,7 +348,7 @@ class HomeCustomerScreen(
         val channelBookingCreated = pusher.subscribe("boking-created")
         val channelBookingUpdated = pusher.subscribe("boking-status-updated${currentBookingId}")
         val channelMessage = pusher.subscribe("chat-room")
-        val channelDriverLocation = pusher.subscribe("location-driver")
+        val channelDriverLocation = pusher.subscribe("location-driver${currentDriverId}")
 
         channelBookingCreated.bind("App\\Events\\BokingCreated") { event ->
             Log.d(TAG, "Pusher: BokingStatusUpdated: Received event with data: ${event}")
@@ -378,7 +386,22 @@ class HomeCustomerScreen(
             Log.d(TAG, "Pusher: MessageSent: Received event with data: $event")
         }
         channelDriverLocation.bind("App\\Events\\LokasiDriver") { event ->
-            Log.d(TAG, "Pusher:DriverLocation: Received event with data: $event")
+            Log.d(TAG, "Pusher: DriverLocation: Received event with data: $event")
+            try {
+                val gson = Gson()
+                val locationEvent = gson.fromJson(event.toString(), OrderBookingEvent::class.java)
+                val locationEventData = gson.fromJson(locationEvent.data, LocationEventData::class.java)
+
+                Log.d(TAG, "Pusher: DriverLocation: After make it in model: ${locationEventData}")
+
+                if (currentDriverId == locationEventData.location.id.toString()) {
+                    // Get all booking on
+                    viewModel.getAllBooking()
+                }
+
+            } catch (e: Exception) {
+                Log.d(TAG, "Pusher: DriverLocation: Error: ${e.localizedMessage}")
+            }
         }
 
     }
@@ -412,6 +435,7 @@ class HomeCustomerScreen(
                     // Set bookingId
                     if (bookingData.data.data.isNotEmpty()) {
                         currentBookingId = bookingData.data.data.get(0).id.toString()
+                        currentDriverId = bookingData.data.data.get(0).driver_id.toString()
                     }
                     connectPusher() // Init pusher
                 }

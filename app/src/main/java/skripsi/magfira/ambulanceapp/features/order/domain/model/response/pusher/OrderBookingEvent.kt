@@ -15,6 +15,10 @@ data class BookingEventData(
     @SerializedName("boking")
     val booking: BookingEvent
 )
+data class LocationEventData(
+    @SerializedName("lokasi")
+    val location: BookingEvent
+)
 
 data class BookingEvent(
     @SerializedName("id")

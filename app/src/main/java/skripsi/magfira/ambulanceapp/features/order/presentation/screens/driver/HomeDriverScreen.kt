@@ -78,35 +78,18 @@ class HomeDriverScreen(
         var getAllBooking by remember { mutableStateOf<AllBooking?>(null) }
         var myUserId by remember { mutableStateOf("") }
 
-        if (requestAllPermissions(context = context)) {
-            if (!isLocationServiceInitialized) {
-                viewModel?.InitializeLocation(context = context)
-                locationUpdate()
-
-                isLocationServiceInitialized = true
-            }
-        } else {
-            // Not granted
-            Toast.makeText(
-                context,
-                MessageUtils.MSG_DO_NOT_HAS_LOCATION_PERMISSION,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        LaunchedEffect(context) {
-            connectPusher() // Init pusher
-        }
-
         if (viewModel != null) {
             // Check Login
             LaunchedEffect(true) {
                 val isLogin = dataStorePreferences.getUserIsLogin.first()
                 val token = dataStorePreferences.getUserToken.first()
+                val role = dataStorePreferences.getUserRole.first()
+                myUserId = dataStorePreferences.getUserId.first()!!
 
                 if (isLogin == true) {
                     viewModel.token = token ?: ""
-                    myUserId = dataStorePreferences.getUserId.first()!!
+                    viewModel.role = role ?: ""
+                    viewModel.userId = myUserId ?: ""
 
                 } else {
                     // Not Login
@@ -135,6 +118,26 @@ class HomeDriverScreen(
                 },
                 context,
             )
+        }
+
+        if (requestAllPermissions(context = context)) {
+            if (!isLocationServiceInitialized) {
+                viewModel?.InitializeLocation(context = context)
+                locationUpdate()
+
+                isLocationServiceInitialized = true
+            }
+        } else {
+            // Not granted
+            Toast.makeText(
+                context,
+                MessageUtils.MSG_DO_NOT_HAS_LOCATION_PERMISSION,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        LaunchedEffect(context) {
+            connectPusher() // Init pusher
         }
 
         Box(

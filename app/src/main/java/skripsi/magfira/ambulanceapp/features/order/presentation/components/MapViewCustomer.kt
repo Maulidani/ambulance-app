@@ -22,6 +22,7 @@ import skripsi.magfira.ambulanceapp.features.order.domain.model.response.Booking
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.DriversData
 import skripsi.magfira.ambulanceapp.features.order.presentation.view_models.OrderViewModel
 import skripsi.magfira.ambulanceapp.util.getReadableLocation
+import skripsi.magfira.ambulanceapp.util.locationUpdate
 import skripsi.magfira.ambulanceapp.util.stopLocationUpdate
 
 @Composable

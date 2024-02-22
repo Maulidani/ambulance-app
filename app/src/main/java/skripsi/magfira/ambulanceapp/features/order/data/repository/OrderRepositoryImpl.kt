@@ -4,9 +4,11 @@ import skripsi.magfira.ambulanceapp.features.order.data.remote.OrderApi
 import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.AcceptBookingDto
 import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.AllBookingDto
 import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.DriversDto
+import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.GetLocationDto
 import skripsi.magfira.ambulanceapp.features.order.data.remote.dto.OrderBookingDto
 import skripsi.magfira.ambulanceapp.features.order.domain.model.request.AcceptBookingRequest
 import skripsi.magfira.ambulanceapp.features.order.domain.model.request.OrderRequest
+import skripsi.magfira.ambulanceapp.features.order.domain.model.request.UpdateLocationRequest
 import skripsi.magfira.ambulanceapp.features.order.domain.model.response.AllBooking
 import skripsi.magfira.ambulanceapp.features.order.domain.repository.OrderRepository
 import javax.inject.Inject
@@ -14,6 +16,14 @@ import javax.inject.Inject
 class OrderRepositoryImpl @Inject constructor(
     private val api: OrderApi
 ) : OrderRepository {
+
+    override suspend fun getDriverLocation(token: String, driverId: String): GetLocationDto {
+        return api.getDriverLocation(token, driverId)
+    }
+
+    override suspend fun updateLocation(token: String, userId: String, updateLocationRequest: UpdateLocationRequest): GetLocationDto {
+        return api.updateLocation(token, userId, updateLocationRequest)
+    }
 
     override suspend fun driversOn(token: String): DriversDto {
         return api.driversOn(token)
